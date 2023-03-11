@@ -1,0 +1,5 @@
+venv
+ParsedFiles
+test.py
+.idea
+__pycache__
