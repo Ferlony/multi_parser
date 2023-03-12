@@ -1,8 +1,11 @@
-from parser import Parser
+from youtube_parser import YoutubeParser
+from queue import Queue
 
 
 class Menu:
-    parser = Parser()
+    def __init__(self, youtube_pars: YoutubeParser, queue: Queue):
+        self.youtube_pars = youtube_pars
+        self.some_queue = queue
 
     def main_menu(self):
         while True:
@@ -30,28 +33,49 @@ class Menu:
                   "'2' Download one opus audio\n"
                   "'3' Download playlist mp4 videos\n"
                   "'4' Download playlist opus audio\n"
+                  "'t' Test\n"
                   "'0' Back")
             inp = input()
             if inp == "1":
                 print("Enter youtube url:")
                 url = input()
                 if url:
-                    self.parser.download_youtube_one_video(url)
+                    self.youtube_pars.download_youtube_one_video(url)
             elif inp == "2":
                 print("Enter youtube url:")
                 url = input()
                 if url:
-                    self.parser.download_youtube_one_audio(url)
+                    self.youtube_pars.download_youtube_one_audio(url)
             elif inp == "3":
                 print("Enter youtube url:")
                 url = input()
                 if url:
-                    self.parser.download_youtube_playlist_video(url)
+                    self.youtube_pars.download_youtube_playlist_video(url)
             elif inp == "4":
                 print("Enter youtube url:")
                 url = input()
                 if url:
-                    self.parser.download_youtube_playlist_audio(url)
+                    self.youtube_pars.download_youtube_playlist_audio(url)
+            elif inp == "t":
+                self.youtube_pars.test()
+            elif inp == "0":
+                break
+            else:
+                print("Wrong input")
+
+    def __queue_menu(self):
+        print("Fill the queue:")
+        while True:
+            print("Enter youtube url:")
+            url = input()
+            if url:
+                self.some_queue.put(url)
+            print("Continue?\n"
+                  "'1' Yes\n"
+                  "'0' No")
+            inp = input()
+            if inp == "1":
+                pass
             elif inp == "0":
                 break
             else:
