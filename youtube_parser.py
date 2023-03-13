@@ -36,7 +36,7 @@ class YoutubeParser(Parser):
         self.__check_dirs(self.playlist_title_folder)
 
         for i in playlist:
-            self.some_queue.put(i)
+            self.some_queue.put([i, playlist.title])
         return True
 
     def print_result(self):
@@ -50,7 +50,7 @@ class YoutubeParser(Parser):
     def print_queue_title_and_url(self):
         queue_arr = self.some_queue.queue
         title_and_url = []
-        for i in queue_arr:
+        for url, folder in queue_arr:
             try_counter = 0
             while True:
                 if try_counter > 4:
@@ -58,7 +58,7 @@ class YoutubeParser(Parser):
                     break
                 try:
                     try_counter += 1
-                    title_and_url.append({i: pytube.YouTube(i).title})
+                    title_and_url.append([url, pytube.YouTube(url).title])
                     break
                 except Exception as e:
                     print("Title adding ex: ", e)
@@ -68,7 +68,8 @@ class YoutubeParser(Parser):
 
     def download_from_youtube(self, option):
         while not self.some_queue.empty():
-            url = self.some_queue.get()
+            queue_list = self.some_queue.get()
+            url, title_folder = queue_list
 
             try_counter = 0
             while True:
@@ -80,13 +81,15 @@ class YoutubeParser(Parser):
                     self.__print_status(url, yt)
                     try:
                         if option == YoutubeParserOptionsEnum.one_video.value:
-                            self.__download_youtube_one_video(yt, self.full_folder_path + self.sing_file_folder)
+                            self.__download_youtube_one_video(yt, self.full_folder_path + title_folder)
                         elif option == YoutubeParserOptionsEnum.one_audio.value:
-                            self.__download_youtube_one_audio(yt, self.full_folder_path + self.sing_file_folder)
+                            self.__download_youtube_one_audio(yt, self.full_folder_path + title_folder)
                         elif option == YoutubeParserOptionsEnum.playlist_video.value:
-                            self.__download_youtube_one_video(yt, self.full_folder_path + self.playlist_title_folder)
+                            new_title_folder = title_folder + "_video" + sep
+                            self.__download_youtube_one_video(yt, self.full_folder_path + new_title_folder)
                         elif option == YoutubeParserOptionsEnum.playlist_audio.value:
-                            self.__download_youtube_one_audio(yt, self.full_folder_path + self.playlist_title_folder)
+                            new_title_folder = title_folder + "_audio" + sep
+                            self.__download_youtube_one_audio(yt, self.full_folder_path + new_title_folder)
                         break
                     except CouldNotDownloadError:
                         self.fail_download_queue.put({yt.title, url})

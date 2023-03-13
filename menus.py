@@ -33,6 +33,7 @@ class Menu:
     def __youtube_playlist_menu(self):
         while True:
             self.youtube_pars.clear_queue()
+            self.threads_list = []
             print("Choose option:\n"
                   "'1' Download one mp4 video\n"
                   "'2' Download one opus audio\n"
@@ -60,25 +61,19 @@ class Menu:
 
             elif inp == "3":
                 option = YoutubeParserOptionsEnum.playlist_video.value
-                print("Enter youtube url:")
-                url = input()
-                if url:
-                    if self.youtube_pars.download_from_youtube_check(option, url):
-                        self.youtube_pars.print_queue_title_and_url()
-                        if confirmation():
-                            self.__start_download_menu(option)
-                            self.youtube_pars.print_result()
+                self.__queue_menu_playlist(self.youtube_pars, option)
+                self.youtube_pars.print_queue_title_and_url()
+                if confirmation():
+                    self.__start_download_menu(option)
+                    self.youtube_pars.print_result()
 
             elif inp == "4":
                 option = YoutubeParserOptionsEnum.playlist_audio.value
-                print("Enter youtube url:")
-                url = input()
-                if url:
-                    if self.youtube_pars.download_from_youtube_check(option, url):
-                        self.youtube_pars.print_queue_title_and_url()
-                        if confirmation():
-                            self.__start_download_menu(option)
-                            self.youtube_pars.print_result()
+                self.__queue_menu_playlist(self.youtube_pars, option)
+                self.youtube_pars.print_queue_title_and_url()
+                if confirmation():
+                    self.__start_download_menu(option)
+                    self.youtube_pars.print_result()
 
             elif inp == "0":
                 break
@@ -107,19 +102,35 @@ class Menu:
 
     @staticmethod
     def __queue_menu_one(some_parser: Parser):
-        print("Fill the queue:")
         while True:
-            print("Enter youtube url:")
-            url = input()
-            if url:
-                some_parser.some_queue.put(url)
-            print("Continue?\n"
-                  "'1' Yes\n"
-                  "'0' No")
+            print("Fill the queue\n"
+                  "'1' Add in queue\n"
+                  "'0' Finish")
             inp = input()
             if inp == "1":
-                pass
+                print("Enter youtube url:")
+                url = input()
+                if url:
+                    some_parser.some_queue.put([url, some_parser.sing_file_folder])
             elif inp == "0":
+                break
+            else:
+                print("Wrong input")
+
+    @staticmethod
+    def __queue_menu_playlist(some_parser: YoutubeParser, option):
+        while True:
+            print("Fill the queue\n"
+                  "'1' Add in queue\n"
+                  "'0' Finish")
+            inp = input()
+            if inp == "1":
+                print("Enter youtube url:")
+                url = input()
+                if url:
+                    print(some_parser.download_from_youtube_check(option, url))
+            elif inp == "0":
+                print("Please wait confirmation")
                 break
             else:
                 print("Wrong input")
