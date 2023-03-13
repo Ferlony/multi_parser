@@ -2,7 +2,7 @@ from youtube_parser import YoutubeParser
 from parser import Parser
 import threading
 from enums import YoutubeParserOptionsEnum
-from depfuns import conformation
+from depfuns import confirmation
 
 
 class Menu:
@@ -32,6 +32,7 @@ class Menu:
 
     def __youtube_playlist_menu(self):
         while True:
+            self.youtube_pars.clear_queue()
             print("Choose option:\n"
                   "'1' Download one mp4 video\n"
                   "'2' Download one opus audio\n"
@@ -44,22 +45,18 @@ class Menu:
                 self.__queue_menu_one(self.youtube_pars)
                 if self.youtube_pars.download_from_youtube_check(option):
                     self.youtube_pars.print_queue_title_and_url()
-                    if conformation():
+                    if confirmation():
                         self.__start_download_menu(option)
                         self.youtube_pars.print_result()
-                    else:
-                        self.youtube_pars.clear_queue()
 
             elif inp == "2":
                 option = YoutubeParserOptionsEnum.one_audio.value
                 self.__queue_menu_one(self.youtube_pars)
                 if self.youtube_pars.download_from_youtube_check(option):
                     self.youtube_pars.print_queue_title_and_url()
-                    if conformation():
+                    if confirmation():
                         self.__start_download_menu(option)
                         self.youtube_pars.print_result()
-                    else:
-                        self.youtube_pars.clear_queue()
 
             elif inp == "3":
                 option = YoutubeParserOptionsEnum.playlist_video.value
@@ -68,11 +65,9 @@ class Menu:
                 if url:
                     if self.youtube_pars.download_from_youtube_check(option, url):
                         self.youtube_pars.print_queue_title_and_url()
-                        if conformation():
+                        if confirmation():
                             self.__start_download_menu(option)
                             self.youtube_pars.print_result()
-                        else:
-                            self.youtube_pars.clear_queue()
 
             elif inp == "4":
                 option = YoutubeParserOptionsEnum.playlist_audio.value
@@ -81,11 +76,9 @@ class Menu:
                 if url:
                     if self.youtube_pars.download_from_youtube_check(option, url):
                         self.youtube_pars.print_queue_title_and_url()
-                        if conformation():
+                        if confirmation():
                             self.__start_download_menu(option)
                             self.youtube_pars.print_result()
-                        else:
-                            self.youtube_pars.clear_queue()
 
             elif inp == "0":
                 break

@@ -3,7 +3,7 @@ from os import mkdir
 # from shutil import rmtree
 
 
-def conformation():
+def confirmation():
     while True:
         print("Are you sure?\n'1' Yes\n'0' No")
         inp = input()

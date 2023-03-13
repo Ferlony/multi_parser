@@ -1,5 +1,4 @@
 from menus import Menu
-from youtube_parser import YoutubeParser
 
 
 def main(args=None):

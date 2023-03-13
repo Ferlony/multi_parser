@@ -62,7 +62,7 @@ class YoutubeParser(Parser):
                     break
                 except Exception as e:
                     print("Title adding ex: ", e)
-                    time.sleep(5)
+                    time.sleep(self.sleep_time_error)
         for i in title_and_url:
             print(i)
 
