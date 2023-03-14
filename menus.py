@@ -39,6 +39,7 @@ class Menu:
                   "'2' Download one opus audio\n"
                   "'3' Download playlist mp4 videos\n"
                   "'4' Download playlist opus audio\n"
+                  "'5' Set number of threads (10 by default)\n"
                   "'0' Back")
             inp = input()
             if inp == "1":
@@ -74,6 +75,19 @@ class Menu:
                 if confirmation():
                     self.__start_download_menu(option)
                     self.youtube_pars.print_result()
+
+            elif inp == "5":
+                print("Enter number of threads from 1 to 10")
+                try:
+                    thr_number = int(input())
+                    if thr_number in range(1, 11):
+                        self.threads_max_number = thr_number
+                        print(f"Threads number successfully set {thr_number}")
+                    else:
+                        print("Wrong input")
+                except Exception as e:
+                    print("Wrong input")
+                    print(e)
 
             elif inp == "0":
                 break
