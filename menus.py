@@ -125,7 +125,18 @@ class Menu:
                 print("Enter youtube url:")
                 url = input()
                 if url:
-                    some_parser.some_queue.put([url, some_parser.sing_file_folder])
+                    try_counter = 0
+                    while True:
+                        if try_counter > some_parser.download_tries_number:
+                            print("Couldn't add")
+                            break
+                        try:
+                            try_counter += 1
+                            some_parser.some_queue.put([url, some_parser.sing_file_folder])
+                            break
+                        except Exception as e:
+                            print("try count: ", try_counter)
+                            print(e)
             elif inp == "0":
                 break
             else:
@@ -142,7 +153,18 @@ class Menu:
                 print("Enter youtube url:")
                 url = input()
                 if url:
-                    print(some_parser.download_from_youtube_check(option, url))
+                    try_counter = 0
+                    while True:
+                        if try_counter > some_parser.download_tries_number:
+                            print("Couldn't add")
+                            break
+                        try:
+                            try_counter += 1
+                            print(some_parser.download_from_youtube_check(option, url))
+                            break
+                        except Exception as e:
+                            print("try count: ", try_counter)
+                            print(e)
             elif inp == "0":
                 print("Please wait confirmation")
                 break
