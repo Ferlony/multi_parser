@@ -15,24 +15,25 @@ def confirmation():
             print("Wrong input")
 
 
-def create_dir(current_working_dir, gen_files_folder, additional_files_folder):
-    try:
-        mkdir(current_working_dir + gen_files_folder + additional_files_folder)
-    except:
-        try:
-            mkdir(current_working_dir + gen_files_folder)
-            mkdir(current_working_dir + gen_files_folder + additional_files_folder)
-        except:
-            return
-        # except:
-        #     rmtree(files_location_path_abs + gen_files_folder + additional_files_folder)
-        #     mkdir(files_location_path_abs + gen_files_folder + additional_files_folder)
-    return
+# def create_dir(current_working_dir, gen_files_folder, additional_files_folder):
+#     try:
+#         mkdir(current_working_dir + gen_files_folder + additional_files_folder)
+#     except:
+#         try:
+#             mkdir(current_working_dir + gen_files_folder)
+#             mkdir(current_working_dir + gen_files_folder + additional_files_folder)
+#         except:
+#             return
+#         # except:
+#         #     rmtree(files_location_path_abs + gen_files_folder + additional_files_folder)
+#         #     mkdir(files_location_path_abs + gen_files_folder + additional_files_folder)
+#     return
+#
+#
+# def create_new_dir(full_files_path, new_dir):
+#     try:
+#         mkdir(full_files_path + new_dir)
+#     except:
+#         return
+#     return
 
-
-def create_new_dir(full_files_path, new_dir):
-    try:
-        mkdir(full_files_path + new_dir)
-    except:
-        return
-    return

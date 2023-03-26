@@ -1,7 +1,6 @@
 import time
 import pytube
-from depfuns import create_dir, create_new_dir
-from os import path, sep
+from os import sep
 from parser import Parser
 from exceptions import CouldNotDownloadError, UnsupportedOptionError
 from enums import YoutubeParserOptionsEnum
@@ -14,40 +13,19 @@ class YoutubeParser(Parser):
 
     playlist_title_folder = None
 
-    def __print_status(self, url, yt: pytube.YouTube):
-        print(self.queue_size_max - self.some_queue.qsize(), "/", self.queue_size_max)
-        print("Url:\n", url)
-        print(yt.title)
-
-    def __check_dirs(self, title_folder=None):
-        if not title_folder:
-            title_folder = self.sing_file_folder
-        if not path.exists(self.full_folder_path):
-            create_dir(self.gen_files_folder, self.gen_files_folder, self.special_folder)
-        if not path.exists(self.full_folder_path + title_folder):
-            create_new_dir(self.full_folder_path, title_folder)
-
     def __check_playlist(self, playlist: pytube.Playlist):
         print("Chosen playlist: ", playlist)
         print("Playlist title: ", playlist.title)
         amount_playlist_videos = len(playlist.video_urls)
         print('Number of videos in playlist: %s' % amount_playlist_videos)
 
-        self.__check_dirs(self.playlist_title_folder)
+        self.check_dirs(self.playlist_title_folder)
 
         for i in playlist:
             self.some_queue.put([i, playlist.title])
         return True
 
-    def print_result(self):
-        print("\n========\nFinished")
-        print(f"Downloaded {self.queue_size_max - self.some_queue.qsize() - self.fail_download_queue.qsize()} /",
-              self.queue_size_max)
-        print(f"Download Failure {self.fail_download_queue.qsize()}")
-        for i in self.fail_download_queue.queue:
-            print(i)
-
-    def print_queue_title_and_url(self):
+    def print_queue_elems(self):
         queue_arr = self.some_queue.queue
         title_and_url = []
         for url, folder in queue_arr:
@@ -78,7 +56,9 @@ class YoutubeParser(Parser):
                 try:
                     try_counter += 1
                     yt = pytube.YouTube(url)
-                    self.__print_status(url, yt)
+                    self.print_queue_status()
+                    print("Url:\n", url)
+                    print(yt.title)
                     try:
                         if option == YoutubeParserOptionsEnum.one_video.value:
                             self.__download_youtube_one_video(yt, self.full_folder_path + title_folder)
@@ -100,10 +80,10 @@ class YoutubeParser(Parser):
 
     def download_from_youtube_check(self, option, url=None):
         if option == YoutubeParserOptionsEnum.one_video.value:
-            self.__check_dirs()
+            self.check_dirs()
             return True
         elif option == YoutubeParserOptionsEnum.one_audio.value:
-            self.__check_dirs()
+            self.check_dirs()
             return True
         elif option == YoutubeParserOptionsEnum.playlist_video.value:
             playlist = pytube.Playlist(url)

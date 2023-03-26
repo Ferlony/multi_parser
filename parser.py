@@ -1,13 +1,15 @@
-from os import path, sep
 from queue import Queue
+from parser_dataclass import ParserDataClass
+from os import path
+from os import mkdir
 
 
-class Parser:
+class Parser(ParserDataClass):
 
     some_queue = Queue()
     fail_download_queue = Queue()
 
-    __queue_size_max = None
+    __queue_size_max = 0
 
     @property
     def queue_size_max(self):
@@ -17,14 +19,37 @@ class Parser:
     def queue_size_max(self, value):
         self.__queue_size_max = value
 
-    current_working_dir = path.dirname(__file__) + sep
-    gen_files_folder = "ParsedFiles" + sep
-    sing_file_folder = "GenFolder" + sep
+    def check_dirs(self, title_folder=None):
+        if not title_folder:
+            title_folder = self.sing_file_folder
+        if not path.exists(self.full_folder_path):
+            #create_dir(self.gen_files_folder, self.gen_files_folder, self.special_folder)
+            try:
+                mkdir(self.full_folder_path)
+            except Exception as e:
+                print(e)
+        if not path.exists(self.full_folder_path + title_folder):
+            try:
+                mkdir(self.full_folder_path + title_folder)
+            except Exception as e:
+                print(e)
+            #create_new_dir(self.full_folder_path, title_folder)
 
-    special_folder = "SomeSpecialFolder" + sep
+    def print_queue_elems(self):
+        queue_arr = self.some_queue.queue
+        for url, folder in queue_arr:
+            print(url)
 
-    download_tries_number = 5
-    sleep_time_error = 5
+    def print_queue_status(self):
+        print(self.queue_size_max - self.some_queue.qsize(), "/", self.queue_size_max)
+
+    def print_result(self):
+        print("\n========\nFinished")
+        print(f"Downloaded {self.queue_size_max - self.some_queue.qsize() - self.fail_download_queue.qsize()} /",
+              self.queue_size_max)
+        print(f"Download Failure {self.fail_download_queue.qsize()}")
+        for i in self.fail_download_queue.queue:
+            print(i)
 
     def clear_queue(self):
         self.some_queue = Queue()
