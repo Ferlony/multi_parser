@@ -14,12 +14,14 @@ class SonglyricsParser(Parser):
 
     group_title_folder = None
 
-    def download_from_songlyrics_check(self, option):
+    def download_from_songlyrics_check(self, option, url=None):
         if option == SonglyricsOptionsEnum.one_lyric.value:
             self.check_dirs()
             return True
         elif option == SonglyricsOptionsEnum.all_lyrics.value:
-            pass
+            group_title = self.__extract_group_title(url)
+            self.group_title_folder = group_title + sep
+            return self.__check_group_songs(url)
         else:
             raise UnsupportedOptionError
 
@@ -38,16 +40,9 @@ class SonglyricsParser(Parser):
                     print("Url:\n", url)
                     try:
                         if option == SonglyricsOptionsEnum.one_lyric.value:
-                            """
-                            self.__download_youtube_one_video(yt, self.full_folder_path + title_folder)
-                            """
-                            self.__download_lyric(url, self.full_folder_path + title_folder)
+                            self.__download_songlyrics_one_lyric(url, self.full_folder_path + title_folder)
                         elif option == SonglyricsOptionsEnum.all_lyrics.value:
-                            """
-                            new_title_folder = title_folder + "_video" + sep
-                            self.__download_youtube_one_video(yt, self.full_folder_path + new_title_folder)
-                            """
-                            pass
+                            self.__download_songlyrics_one_lyric(url, self.full_folder_path + title_folder)
                         break
                     except CouldNotDownloadError:
                         self.fail_download_queue.put(url)
@@ -72,12 +67,44 @@ class SonglyricsParser(Parser):
                 print(e, "\nDownload try: ", counter)
                 time.sleep(self.sleep_time_error)
 
+    def __check_group_songs(self, url):
+        songs = self.__extract_songs_from_group_url(url)
+        print("Chosen group: ", url)
+        print("Group title: ", self.group_title_folder.replace(sep, ""))
+        print("Number of songs in group page: ", len(songs))
+
+        self.check_dirs(self.group_title_folder)
+
+        for each in songs:
+            self.some_queue.put([each, self.group_title_folder])
+        return True
+
+    @staticmethod
+    def __extract_songs_from_group_url(group_url):
+        songs = []
+        page = requests.get(group_url)
+        soup = BeautifulSoup(page.text, "html.parser")
+
+        song_urls = soup.find("table", class_="tracklist").findAll("a")
+        for each in song_urls:
+            songs.append(each.get("href"))
+
+        return songs
+
+    @staticmethod
+    def __extract_group_title(url):
+        page = requests.get(url)
+        soup = BeautifulSoup(page.text, "html.parser")
+
+        group_name = soup.find('div', class_='pagetitle').find('h1').get_text('\n', strip=True)
+        return str(group_name).replace(sep, "")
+
     @staticmethod
     def __download_lyric(url, save_path):
         page = requests.get(url)
         soup = BeautifulSoup(page.text, "html.parser")
 
-        song_name = soup.find('div', class_='pagetitle').find('h1').get_text('\n', strip=True)
+        song_name = soup.find('div', class_='pagetitle').find('h1').get_text('\n', strip=True).replace(sep, "")
         song = soup.find('p', id="songLyricsDiv").get_text()
 
         with open(save_path + str(song_name) + ".txt", "w") as file:

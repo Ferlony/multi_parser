@@ -23,7 +23,6 @@ class Parser(ParserDataClass):
         if not title_folder:
             title_folder = self.sing_file_folder
         if not path.exists(self.full_folder_path):
-            #create_dir(self.gen_files_folder, self.gen_files_folder, self.special_folder)
             try:
                 mkdir(self.full_folder_path)
             except Exception as e:
@@ -33,7 +32,6 @@ class Parser(ParserDataClass):
                 mkdir(self.full_folder_path + title_folder)
             except Exception as e:
                 print(e)
-            #create_new_dir(self.full_folder_path, title_folder)
 
     def print_queue_elems(self):
         queue_arr = self.some_queue.queue

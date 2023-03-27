@@ -2,6 +2,7 @@
 
 About
 =====
-Parser for different services.
+Parser for different services with threads and queues.
 
-For now, only youtube done.
+
+Work with youtube, songlyrics.com
