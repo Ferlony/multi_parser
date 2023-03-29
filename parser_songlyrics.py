@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import requests
 from enums import SonglyricsOptionsEnum
 from exceptions import UnsupportedOptionError, CouldNotDownloadError
-import time
+import decorators
 
 
 class SonglyricsParser(Parser):
@@ -51,21 +51,9 @@ class SonglyricsParser(Parser):
                     print(e)
                     print("Loop try: ", try_counter)
 
+    @decorators.download_one_file_decorator
     def __download_songlyrics_one_lyric(self, url, save_path):
-        counter = 0
-        while True:
-            if counter >= self.download_tries_number:
-                print("Couldn't download ", url)
-                raise CouldNotDownloadError
-            try:
-                counter += 1
-                self.__download_lyric(url, save_path)
-                print("##########")
-                print("Downloaded\n", url)
-                break
-            except Exception as e:
-                print(e, "\nDownload try: ", counter)
-                time.sleep(self.sleep_time_error)
+        self.__download_lyric(url, save_path)
 
     def __check_group_songs(self, url):
         songs = self.__extract_songs_from_group_url(url)

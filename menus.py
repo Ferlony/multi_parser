@@ -4,6 +4,7 @@ from parser import Parser
 import threading
 from enums import YoutubeParserOptionsEnum, SonglyricsOptionsEnum
 from depfuns import confirmation
+import decorators
 
 
 class Menu:
@@ -18,6 +19,7 @@ class Menu:
             print("Choose action:\n"
                   "'1' Download from youtube\n"
                   "'2' Download lyrics from songlyrics.com\n"
+                  "'3' Configuration\n"
                   "'0' Close program")
             inp = input()
             if inp == "1":
@@ -30,10 +32,38 @@ class Menu:
                     self.__songlyrics_menu()
                 except Exception as e:
                     print(e)
+            elif inp == "3":
+                try:
+                    self.__configuration_menu()
+                except Exception as e:
+                    print(e)
             elif inp == "t":
                 pass
             elif inp == "0":
                 print("Closing program")
+                break
+            else:
+                print("Wrong input")
+
+    def __configuration_menu(self):
+        while True:
+            print("Choose option:\n"
+                  "'1' Set number of threads (10 by default)\n"
+                  "'0' Back")
+            inp = input()
+            if inp == "1":
+                print("Enter number of threads from 1 to 10")
+                try:
+                    thr_number = int(input())
+                    if thr_number in range(1, 11):
+                        self.threads_max_number = thr_number
+                        print(f"Threads number successfully set {thr_number}")
+                    else:
+                        print("Wrong input")
+                except Exception as e:
+                    print("Wrong input")
+                    print(e)
+            elif inp == "0":
                 break
             else:
                 print("Wrong input")
@@ -49,7 +79,7 @@ class Menu:
             inp = input()
             if inp == "1":
                 option = SonglyricsOptionsEnum.one_lyric.value
-                self.__queue_menu_one(self.songlyrics_pars)
+                self.__queue_menu_one(self.songlyrics_pars, None)
                 if self.songlyrics_pars.download_from_songlyrics_check(option):
                     self.songlyrics_pars.print_queue_elems()
                     self.songlyrics_pars.queue_size_max = self.songlyrics_pars.some_queue.qsize()
@@ -82,12 +112,11 @@ class Menu:
                   "'2' Download one opus audio\n"
                   "'3' Download playlist mp4 videos\n"
                   "'4' Download playlist opus audio\n"
-                  "'5' Set number of threads (10 by default)\n"
                   "'0' Back")
             inp = input()
             if inp == "1":
                 option = YoutubeParserOptionsEnum.one_video.value
-                self.__queue_menu_one(self.youtube_pars)
+                self.__queue_menu_one(self.youtube_pars, None)
                 if self.youtube_pars.download_from_youtube_check(option):
                     self.youtube_pars.print_queue_elems()
                     print(self.youtube_pars.some_queue.qsize())
@@ -97,7 +126,7 @@ class Menu:
 
             elif inp == "2":
                 option = YoutubeParserOptionsEnum.one_audio.value
-                self.__queue_menu_one(self.youtube_pars)
+                self.__queue_menu_one(self.youtube_pars, None)
                 if self.youtube_pars.download_from_youtube_check(option):
                     self.youtube_pars.print_queue_elems()
                     print(self.youtube_pars.some_queue.qsize())
@@ -123,19 +152,6 @@ class Menu:
                     self.__youtube_start_downloading(self.__start_download_menu(self.youtube_pars), option)
                     self.youtube_pars.print_result()
 
-            elif inp == "5":
-                print("Enter number of threads from 1 to 10")
-                try:
-                    thr_number = int(input())
-                    if thr_number in range(1, 11):
-                        self.threads_max_number = thr_number
-                        print(f"Threads number successfully set {thr_number}")
-                    else:
-                        print("Wrong input")
-                except Exception as e:
-                    print("Wrong input")
-                    print(e)
-
             elif inp == "0":
                 break
             else:
@@ -152,114 +168,31 @@ class Menu:
 
         return threads_number
 
+    @decorators.start_downloading_decorator
     def __songlyrics_start_downloading(self, threads_number, option):
-        for i in range(0, threads_number):
-            thr = threading.Thread(target=self.songlyrics_pars.download_from_songlyrics,
-                                   args=[option],
-                                   daemon=False)
-            self.threads_list.append(thr)
+        thr = threading.Thread(target=self.songlyrics_pars.download_from_songlyrics,
+                               args=[option],
+                               daemon=False)
+        self.threads_list.append(thr)
 
-        for i in self.threads_list:
-            i.start()
-
-        for j in self.threads_list:
-            j.join()
-
+    @decorators.start_downloading_decorator
     def __youtube_start_downloading(self, threads_number, option):
-        for i in range(0, threads_number):
-            thr = threading.Thread(target=self.youtube_pars.download_from_youtube,
-                                   args=[option],
-                                   daemon=False)
-            self.threads_list.append(thr)
-
-        for i in self.threads_list:
-            i.start()
-
-        for j in self.threads_list:
-            j.join()
+        thr = threading.Thread(target=self.youtube_pars.download_from_youtube,
+                               args=[option],
+                               daemon=False)
+        self.threads_list.append(thr)
 
     @staticmethod
-    def __queue_menu_one(some_parser: Parser):
-        while True:
-            print("Fill the queue\n"
-                  "'1' Add in queue\n"
-                  "'0' Finish")
-            inp = input()
-            if inp == "1":
-                print("Enter url:")
-                url = input()
-                if url:
-                    try_counter = 0
-                    while True:
-                        if try_counter > some_parser.download_tries_number:
-                            print("Couldn't add")
-                            break
-                        try:
-                            try_counter += 1
-                            some_parser.some_queue.put([url, some_parser.sing_file_folder])
-                            break
-                        except Exception as e:
-                            print("try count: ", try_counter)
-                            print(e)
-            elif inp == "0":
-                break
-            else:
-                print("Wrong input")
+    @decorators.queue_menu_decorator
+    def __queue_menu_one(some_parser: Parser, option, url=None):
+        some_parser.some_queue.put([url, some_parser.sing_file_folder])
 
     @staticmethod
-    def __songlyrics_queue_menu_group(some_parser: SonglyricsParser, option):
-        while True:
-            print("Fill the queue\n"
-                  "'1' Add in queue\n"
-                  "'0' Finish")
-            inp = input()
-            if inp == "1":
-                print("Enter youtube url:")
-                url = input()
-                if url:
-                    try_counter = 0
-                    while True:
-                        if try_counter > some_parser.download_tries_number:
-                            print("Couldn't add")
-                            break
-                        try:
-                            try_counter += 1
-                            print(some_parser.download_from_songlyrics_check(option, url))
-                            break
-                        except Exception as e:
-                            print("try count: ", try_counter)
-                            print(e)
-            elif inp == "0":
-                print("Please wait confirmation")
-                break
-            else:
-                print("Wrong input")
+    @decorators.queue_menu_decorator
+    def __songlyrics_queue_menu_group(some_parser: SonglyricsParser, option, url=None):
+        print(some_parser.download_from_songlyrics_check(option, url))
 
     @staticmethod
-    def __youtube_queue_menu_playlist(some_parser: YoutubeParser, option):
-        while True:
-            print("Fill the queue\n"
-                  "'1' Add in queue\n"
-                  "'0' Finish")
-            inp = input()
-            if inp == "1":
-                print("Enter youtube url:")
-                url = input()
-                if url:
-                    try_counter = 0
-                    while True:
-                        if try_counter > some_parser.download_tries_number:
-                            print("Couldn't add")
-                            break
-                        try:
-                            try_counter += 1
-                            print(some_parser.download_from_youtube_check(option, url))
-                            break
-                        except Exception as e:
-                            print("try count: ", try_counter)
-                            print(e)
-            elif inp == "0":
-                print("Please wait confirmation")
-                break
-            else:
-                print("Wrong input")
+    @decorators.queue_menu_decorator
+    def __youtube_queue_menu_playlist(some_parser: YoutubeParser, option, url=None):
+        print(some_parser.download_from_youtube_check(option, url))

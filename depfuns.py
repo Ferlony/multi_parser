@@ -8,3 +8,11 @@ def confirmation():
             return False
         else:
             print("Wrong input")
+
+
+def input_and_check_string():
+    url = input()
+    if url:
+        return url
+    else:
+        return None

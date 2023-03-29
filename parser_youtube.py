@@ -4,6 +4,7 @@ from os import sep
 from parser import Parser
 from exceptions import CouldNotDownloadError, UnsupportedOptionError
 from enums import YoutubeParserOptionsEnum
+import decorators
 
 
 class YoutubeParser(Parser):
@@ -55,9 +56,9 @@ class YoutubeParser(Parser):
                     break
                 try:
                     try_counter += 1
-                    yt = pytube.YouTube(url)
                     self.print_queue_status()
                     print("Url:\n", url)
+                    yt = pytube.YouTube(url)
                     print(yt.title)
                     try:
                         if option == YoutubeParserOptionsEnum.one_video.value:
@@ -98,36 +99,13 @@ class YoutubeParser(Parser):
         else:
             raise UnsupportedOptionError
 
+    @decorators.download_youtube_one_file_decorator
     def __download_youtube_one_video(self, yt: pytube.YouTube, save_path):
-        counter = 0
-        while True:
-            if counter >= self.download_tries_number:
-                print("Couldn't download ", yt.title)
-                raise CouldNotDownloadError
-            try:
-                counter += 1
-                yt.streams.get_highest_resolution().download(save_path)
-                print("##########")
-                print("Downloaded\n", yt.title)
-                break
-            except Exception as e:
-                print(e, "\nDownload try: ", counter)
-                time.sleep(self.sleep_time_error)
+        yt.streams.get_highest_resolution().download(save_path)
 
+    @decorators.download_youtube_one_file_decorator
     def __download_youtube_one_audio(self, yt: pytube.YouTube, save_path):
-        counter = 0
-        while True:
-            if counter >= self.download_tries_number:
-                print("Couldn't download ", yt.title)
-                raise CouldNotDownloadError
-            try:
-                counter += 1
-                yt.streams.filter(only_audio=True, audio_codec="opus").order_by("abr").last().download(
-                    save_path,
-                    yt.title.replace(sep, "") + ".opus")
-                print("##########")
-                print("Downloaded\n", yt.title)
-                break
-            except Exception as e:
-                print(e, "\nDownload try: ", counter)
-                time.sleep(self.sleep_time_error)
+        yt.streams.filter(only_audio=True, audio_codec="opus").order_by("abr").last().download(
+            save_path,
+            yt.title.replace(sep, "") + ".opus")
+

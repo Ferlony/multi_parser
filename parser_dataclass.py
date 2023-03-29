@@ -1,6 +1,8 @@
 from os import path, sep
+from dataclasses import dataclass
 
 
+@dataclass
 class ParserDataClass:
     current_working_dir = path.dirname(__file__) + sep
 
