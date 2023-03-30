@@ -82,3 +82,51 @@ def queue_menu_decorator(fun):
             else:
                 print("Wrong input")
     return gen_fun
+
+
+def download_for_threads_decorator(fun):
+    def gen_fun(self, option):
+        while not self.some_queue.empty():
+            queue_list = self.some_queue.get()
+            url, title_folder = queue_list
+
+            try_counter = 0
+            while True:
+                if try_counter >= self.download_tries_number:
+                    break
+                try:
+                    try_counter += 1
+                    self.print_queue_status()
+                    print("Url:\n", url)
+                    try:
+                        fun(self, option, url, title_folder)
+                        break
+                    except CouldNotDownloadError:
+                        self.fail_download_queue.put(url)
+                        break
+                except Exception as e:
+                    print(e)
+                    print("Loop try: ", try_counter)
+    return gen_fun
+
+
+def download_for_threads_shorten_decorator(fun):
+    def gen_fun(self, option):
+        while not self.some_queue.empty():
+            queue_list = self.some_queue.get()
+            url, title_folder = queue_list
+
+            try_counter = 0
+            while True:
+                if try_counter >= self.download_tries_number:
+                    break
+                try:
+                    try_counter += 1
+                    self.print_queue_status()
+                    print("Url:\n", url)
+                    fun(self, option, url, title_folder)
+                    break
+                except Exception as e:
+                    print(e)
+                    print("Loop try: ", try_counter)
+    return gen_fun

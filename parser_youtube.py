@@ -45,39 +45,24 @@ class YoutubeParser(Parser):
         for i in title_and_url:
             print(i)
 
-    def download_from_youtube(self, option):
-        while not self.some_queue.empty():
-            queue_list = self.some_queue.get()
-            url, title_folder = queue_list
+    @decorators.download_for_threads_shorten_decorator
+    def download_from_youtube(self, option, url=None, title_folder=None):
+        yt = pytube.YouTube(url)
+        print(yt.title)
+        try:
+            if option == YoutubeParserOptionsEnum.one_video.value:
+                self.__download_youtube_one_video(yt, self.full_folder_path + title_folder)
+            elif option == YoutubeParserOptionsEnum.one_audio.value:
+                self.__download_youtube_one_audio(yt, self.full_folder_path + title_folder)
+            elif option == YoutubeParserOptionsEnum.playlist_video.value:
+                new_title_folder = title_folder + "_video" + sep
+                self.__download_youtube_one_video(yt, self.full_folder_path + new_title_folder)
+            elif option == YoutubeParserOptionsEnum.playlist_audio.value:
+                new_title_folder = title_folder + "_audio" + sep
+                self.__download_youtube_one_audio(yt, self.full_folder_path + new_title_folder)
 
-            try_counter = 0
-            while True:
-                if try_counter >= self.download_tries_number:
-                    break
-                try:
-                    try_counter += 1
-                    self.print_queue_status()
-                    print("Url:\n", url)
-                    yt = pytube.YouTube(url)
-                    print(yt.title)
-                    try:
-                        if option == YoutubeParserOptionsEnum.one_video.value:
-                            self.__download_youtube_one_video(yt, self.full_folder_path + title_folder)
-                        elif option == YoutubeParserOptionsEnum.one_audio.value:
-                            self.__download_youtube_one_audio(yt, self.full_folder_path + title_folder)
-                        elif option == YoutubeParserOptionsEnum.playlist_video.value:
-                            new_title_folder = title_folder + "_video" + sep
-                            self.__download_youtube_one_video(yt, self.full_folder_path + new_title_folder)
-                        elif option == YoutubeParserOptionsEnum.playlist_audio.value:
-                            new_title_folder = title_folder + "_audio" + sep
-                            self.__download_youtube_one_audio(yt, self.full_folder_path + new_title_folder)
-                        break
-                    except CouldNotDownloadError:
-                        self.fail_download_queue.put({yt.title, url})
-                        break
-                except Exception as e:
-                    print(e)
-                    print("Loop try: ", try_counter)
+        except CouldNotDownloadError:
+            self.fail_download_queue.put({yt.title, url})
 
     def download_from_youtube_check(self, option, url=None):
         if option == YoutubeParserOptionsEnum.one_video.value:
@@ -108,4 +93,3 @@ class YoutubeParser(Parser):
         yt.streams.filter(only_audio=True, audio_codec="opus").order_by("abr").last().download(
             save_path,
             yt.title.replace(sep, "") + ".opus")
-

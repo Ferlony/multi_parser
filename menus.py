@@ -79,24 +79,11 @@ class Menu:
             inp = input()
             if inp == "1":
                 option = SonglyricsOptionsEnum.one_lyric.value
-                self.__queue_menu_one(self.songlyrics_pars, None)
-                if self.songlyrics_pars.download_from_songlyrics_check(option):
-                    self.songlyrics_pars.print_queue_elems()
-                    self.songlyrics_pars.queue_size_max = self.songlyrics_pars.some_queue.qsize()
-                    print(self.songlyrics_pars.queue_size_max)
-                    if confirmation():
-                        self.__songlyrics_start_downloading(self.__start_download_menu(self.songlyrics_pars), option)
-                        self.songlyrics_pars.print_result()
+                self.__download_options_songlyrics_one(option)
 
             elif inp == "2":
                 option = SonglyricsOptionsEnum.all_lyrics.value
-                self.__songlyrics_queue_menu_group(self.songlyrics_pars, option)
-                self.songlyrics_pars.print_queue_elems()
-                self.songlyrics_pars.queue_size_max = self.songlyrics_pars.some_queue.qsize()
-                print(self.songlyrics_pars.queue_size_max)
-                if confirmation():
-                    self.__songlyrics_start_downloading(self.__start_download_menu(self.songlyrics_pars), option)
-                    self.songlyrics_pars.print_result()
+                self.__download_options_songlyrics_group(option)
 
             elif inp == "0":
                 break
@@ -116,41 +103,19 @@ class Menu:
             inp = input()
             if inp == "1":
                 option = YoutubeParserOptionsEnum.one_video.value
-                self.__queue_menu_one(self.youtube_pars, None)
-                if self.youtube_pars.download_from_youtube_check(option):
-                    self.youtube_pars.print_queue_elems()
-                    print(self.youtube_pars.some_queue.qsize())
-                    if confirmation():
-                        self.__youtube_start_downloading(self.__start_download_menu(self.youtube_pars), option)
-                        self.youtube_pars.print_result()
+                self.__download_options_youtube_one(option)
 
             elif inp == "2":
                 option = YoutubeParserOptionsEnum.one_audio.value
-                self.__queue_menu_one(self.youtube_pars, None)
-                if self.youtube_pars.download_from_youtube_check(option):
-                    self.youtube_pars.print_queue_elems()
-                    print(self.youtube_pars.some_queue.qsize())
-                    if confirmation():
-                        self.__youtube_start_downloading(self.__start_download_menu(self.youtube_pars), option)
-                        self.youtube_pars.print_result()
+                self.__download_options_youtube_one(option)
 
             elif inp == "3":
                 option = YoutubeParserOptionsEnum.playlist_video.value
-                self.__youtube_queue_menu_playlist(self.youtube_pars, option)
-                self.youtube_pars.print_queue_elems()
-                print(self.youtube_pars.some_queue.qsize())
-                if confirmation():
-                    self.__youtube_start_downloading(self.__start_download_menu(self.youtube_pars), option)
-                    self.youtube_pars.print_result()
+                self.__download_options_youtube_playlist(option)
 
             elif inp == "4":
                 option = YoutubeParserOptionsEnum.playlist_audio.value
-                self.__youtube_queue_menu_playlist(self.youtube_pars, option)
-                self.youtube_pars.print_queue_elems()
-                print(self.youtube_pars.some_queue.qsize())
-                if confirmation():
-                    self.__youtube_start_downloading(self.__start_download_menu(self.youtube_pars), option)
-                    self.youtube_pars.print_result()
+                self.__download_options_youtube_playlist(option)
 
             elif inp == "0":
                 break
@@ -167,6 +132,42 @@ class Menu:
             threads_number = self.threads_max_number
 
         return threads_number
+
+    def __download_options_songlyrics_one(self, option):
+        self.__queue_menu_one(self.songlyrics_pars, None)
+        if self.songlyrics_pars.download_from_songlyrics_check(option):
+            self.songlyrics_pars.print_queue_elems()
+            self.songlyrics_pars.queue_size_max = self.songlyrics_pars.some_queue.qsize()
+            print(self.songlyrics_pars.queue_size_max)
+            if confirmation():
+                self.__songlyrics_start_downloading(self.__start_download_menu(self.songlyrics_pars), option)
+                self.songlyrics_pars.print_result()
+
+    def __download_options_songlyrics_group(self, option):
+        self.__songlyrics_queue_menu_group(self.songlyrics_pars, option)
+        self.songlyrics_pars.print_queue_elems()
+        self.songlyrics_pars.queue_size_max = self.songlyrics_pars.some_queue.qsize()
+        print(self.songlyrics_pars.queue_size_max)
+        if confirmation():
+            self.__songlyrics_start_downloading(self.__start_download_menu(self.songlyrics_pars), option)
+            self.songlyrics_pars.print_result()
+
+    def __download_options_youtube_one(self, option):
+        self.__queue_menu_one(self.youtube_pars, None)
+        if self.youtube_pars.download_from_youtube_check(option):
+            self.youtube_pars.print_queue_elems()
+            print(self.youtube_pars.some_queue.qsize())
+            if confirmation():
+                self.__youtube_start_downloading(self.__start_download_menu(self.youtube_pars), option)
+                self.youtube_pars.print_result()
+
+    def __download_options_youtube_playlist(self, option):
+        self.__youtube_queue_menu_playlist(self.youtube_pars, option)
+        self.youtube_pars.print_queue_elems()
+        print(self.youtube_pars.some_queue.qsize())
+        if confirmation():
+            self.__youtube_start_downloading(self.__start_download_menu(self.youtube_pars), option)
+            self.youtube_pars.print_result()
 
     @decorators.start_downloading_decorator
     def __songlyrics_start_downloading(self, threads_number, option):

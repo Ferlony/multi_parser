@@ -3,7 +3,7 @@ from os import sep
 from bs4 import BeautifulSoup
 import requests
 from enums import SonglyricsOptionsEnum
-from exceptions import UnsupportedOptionError, CouldNotDownloadError
+from exceptions import UnsupportedOptionError
 import decorators
 
 
@@ -25,31 +25,12 @@ class SonglyricsParser(Parser):
         else:
             raise UnsupportedOptionError
 
-    def download_from_songlyrics(self, option):
-        while not self.some_queue.empty():
-            queue_list = self.some_queue.get()
-            url, title_folder = queue_list
-
-            try_counter = 0
-            while True:
-                if try_counter >= self.download_tries_number:
-                    break
-                try:
-                    try_counter += 1
-                    self.print_queue_status()
-                    print("Url:\n", url)
-                    try:
-                        if option == SonglyricsOptionsEnum.one_lyric.value:
-                            self.__download_songlyrics_one_lyric(url, self.full_folder_path + title_folder)
-                        elif option == SonglyricsOptionsEnum.all_lyrics.value:
-                            self.__download_songlyrics_one_lyric(url, self.full_folder_path + title_folder)
-                        break
-                    except CouldNotDownloadError:
-                        self.fail_download_queue.put(url)
-                        break
-                except Exception as e:
-                    print(e)
-                    print("Loop try: ", try_counter)
+    @decorators.download_for_threads_decorator
+    def download_from_songlyrics(self, option, url=None, title_folder=None):
+        if option == SonglyricsOptionsEnum.one_lyric.value:
+            self.__download_songlyrics_one_lyric(url, self.full_folder_path + title_folder)
+        elif option == SonglyricsOptionsEnum.all_lyrics.value:
+            self.__download_songlyrics_one_lyric(url, self.full_folder_path + title_folder)
 
     @decorators.download_one_file_decorator
     def __download_songlyrics_one_lyric(self, url, save_path):
