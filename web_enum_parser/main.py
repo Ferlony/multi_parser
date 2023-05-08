@@ -5,6 +5,7 @@ import asyncio
 async def main():
     try:
         print("Enter link without enum:")
+        # https://test/{i}
         link = input()
         if link:
             enum_parser = ParserWebEnum(link)
