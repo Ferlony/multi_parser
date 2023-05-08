@@ -1,0 +1,7 @@
+geckodriver.log
+Logs
+ParsedFiles
+venv
+.idea
+__pycache__
+notes.txt

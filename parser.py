@@ -2,6 +2,7 @@ from queue import Queue
 from parser_dataclass import ParserDataClass
 from os import path
 from os import mkdir
+from os import sep
 
 
 class Parser(ParserDataClass):
@@ -22,6 +23,11 @@ class Parser(ParserDataClass):
     def check_dirs(self, title_folder=None):
         if not title_folder:
             title_folder = self.sing_file_folder
+        if not path.exists(path.abspath(__file__) + sep + "ParsedFiles"):
+            try:
+                mkdir("ParsedFiles")
+            except Exception as e:
+                print(e)
         if not path.exists(self.full_folder_path):
             try:
                 mkdir(self.full_folder_path)

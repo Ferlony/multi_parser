@@ -5,6 +5,8 @@ import threading
 from enums import YoutubeParserOptionsEnum, SonglyricsOptionsEnum
 from depfuns import confirmation
 import decorators
+import web_enum_parser.main as web_enum_parser_main
+from asyncio import run
 
 
 class Menu:
@@ -19,7 +21,8 @@ class Menu:
             print("Choose action:\n"
                   "'1' Download from youtube\n"
                   "'2' Download lyrics from songlyrics.com\n"
-                  "'3' Configuration\n"
+                  "'3' Download from site with js and enum\n"
+                  "'4' Configuration\n"
                   "'0' Close program")
             inp = input()
             if inp == "1":
@@ -33,6 +36,11 @@ class Menu:
                 except Exception as e:
                     print(e)
             elif inp == "3":
+                try:
+                    run(web_enum_parser_main.main())
+                except Exception as e:
+                    print(e)
+            elif inp == "4":
                 try:
                     self.__configuration_menu()
                 except Exception as e:
