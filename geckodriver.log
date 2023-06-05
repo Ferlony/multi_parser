@@ -557,3 +557,103 @@ WebDriver BiDi listening on ws://127.0.0.1:52093
 console.error: ({})
 console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileSAmCw2/search.json.mozlz4", (void 0)))
 DevTools listening on ws://127.0.0.1:52093/devtools/browser/0ff7bd83-80b5-427b-a32e-da109c794b8c
+console.error: ({})
+1685955953008	geckodriver	INFO	Listening on 127.0.0.1:44815
+1685955953589	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/usr ... ss" "--remote-debugging-port" "33871" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileyBy2YU"
+*** You are running in headless mode.
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1685955954472	Marionette	INFO	Marionette enabled
+1685955954478	Marionette	INFO	Listening on port 43969
+Read port: 43969
+WebDriver BiDi listening on ws://127.0.0.1:33871
+1685955954665	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileyBy2YU/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:33871/devtools/browser/2ccb30ed-77a1-499a-9250-a5be06b79336
+[Parent 50651, Main Thread] WARNING: g_object_get: assertion 'G_IS_OBJECT (object)' failed: 'glib warning', file /build/firefox/src/firefox-111.0.1/toolkit/xre/nsSigHandlers.cpp:167
+
+(firefox:50651): GLib-GObject-CRITICAL **: 14:06:58.601: g_object_get: assertion 'G_IS_OBJECT (object)' failed
+1685956021821	Marionette	INFO	Stopped listening on port 43969
+1685956033242	geckodriver	INFO	Listening on 127.0.0.1:38631
+1685956033824	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/usr ... ss" "--remote-debugging-port" "56105" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileDKt4Ot"
+*** You are running in headless mode.
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1685956034714	Marionette	INFO	Marionette enabled
+1685956034720	Marionette	INFO	Listening on port 45317
+Read port: 45317
+WebDriver BiDi listening on ws://127.0.0.1:56105
+1685956034906	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileDKt4Ot/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:56105/devtools/browser/4f7550bd-ee09-4d2f-938c-1664168d3d45
+console.error: ({})
+1685956068163	geckodriver	INFO	Listening on 127.0.0.1:58617
+1685956068742	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/usr ... ss" "--remote-debugging-port" "36403" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileDeI4gH"
+*** You are running in headless mode.
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1685956069646	Marionette	INFO	Marionette enabled
+1685956069652	Marionette	INFO	Listening on port 33001
+Read port: 33001
+WebDriver BiDi listening on ws://127.0.0.1:36403
+1685956069838	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileDeI4gH/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:36403/devtools/browser/7ccb8da6-a38f-48a1-82bc-7106a7117e80
+[Parent 52343, Main Thread] WARNING: g_object_get: assertion 'G_IS_OBJECT (object)' failed: 'glib warning', file /build/firefox/src/firefox-111.0.1/toolkit/xre/nsSigHandlers.cpp:167
+
+(firefox:52343): GLib-GObject-CRITICAL **: 14:08:56.833: g_object_get: assertion 'G_IS_OBJECT (object)' failed
+1685956139296	Marionette	INFO	Stopped listening on port 33001
+1685956157047	geckodriver	INFO	Listening on 127.0.0.1:41279
+1685956157624	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/usr ... ss" "--remote-debugging-port" "45513" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileXigdlu"
+*** You are running in headless mode.
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1685956158552	Marionette	INFO	Marionette enabled
+1685956158560	Marionette	INFO	Listening on port 36123
+Read port: 36123
+WebDriver BiDi listening on ws://127.0.0.1:45513
+1685956158762	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileXigdlu/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:45513/devtools/browser/cdea82ff-7884-448f-addb-4236fabcd262
+console.error: ({})
+1685956190231	geckodriver	INFO	Listening on 127.0.0.1:50391
+1685956190819	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/usr ... ss" "--remote-debugging-port" "46449" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileXUREYU"
+*** You are running in headless mode.
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1685956191711	Marionette	INFO	Marionette enabled
+1685956191716	Marionette	INFO	Listening on port 41101
+Read port: 41101
+WebDriver BiDi listening on ws://127.0.0.1:46449
+1685956191901	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileXUREYU/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:46449/devtools/browser/e7abb96f-157f-4be1-a2a5-0e8a6cb01e34
+[Parent 53492, Main Thread] WARNING: g_object_get: assertion 'G_IS_OBJECT (object)' failed: 'glib warning', file /build/firefox/src/firefox-111.0.1/toolkit/xre/nsSigHandlers.cpp:167
+
+(firefox:53492): GLib-GObject-CRITICAL **: 14:10:59.740: g_object_get: assertion 'G_IS_OBJECT (object)' failed
+1685956259873	Marionette	INFO	Stopped listening on port 41101
+1685956270868	geckodriver	INFO	Listening on 127.0.0.1:42115
+1685956271446	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" MOZ_NO_REMOTE="1" "/usr ... ss" "--remote-debugging-port" "37565" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilex7RkIm"
+*** You are running in headless mode.
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1685956272329	Marionette	INFO	Marionette enabled
+1685956272334	Marionette	INFO	Listening on port 46849
+Read port: 46849
+WebDriver BiDi listening on ws://127.0.0.1:37565
+1685956272518	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilex7RkIm/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:37565/devtools/browser/ca020a0c-763c-4766-b425-21135ed3a720
+console.error: "update.locale" " file doesn't exist in either the application or GRE directories"
