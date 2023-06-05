@@ -5,7 +5,7 @@ import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from pathlib import Path
-
+from selenium.webdriver.firefox.options import Options as Firefox_Options
 
 class ParserWebEnum:
     def __init__(self, link: str):
@@ -30,15 +30,19 @@ class ParserWebEnum:
 
     def __driver_creator(self, folder_path):
         my_firefox_profile = webdriver.FirefoxProfile()
+
+        firefox_options = Firefox_Options()
+        firefox_options.headless = True
+
         my_firefox_profile.set_preference("browser.download.folderList", 2)
         my_firefox_profile.set_preference("browser.download.manager.showWhenStarting", False)
         my_firefox_profile.set_preference("browser.download.dir", self.default_download_dir + folder_path)
         my_firefox_profile.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/x-gzip")
 
-        driver = webdriver.Firefox(firefox_profile=my_firefox_profile)
-        driver.set_window_size(self.window_size.get("x"), self.window_size.get("y"))
-        driver.set_window_position(1920 - self.window_size.get("x") * 2 - 50, 0)
-        driver.minimize_window()
+        driver = webdriver.Firefox(firefox_profile=my_firefox_profile, options=firefox_options)
+        # driver.set_window_size(self.window_size.get("x"), self.window_size.get("y"))
+        # driver.set_window_position(1920 - self.window_size.get("x") * 2 - 50, 0)
+        # driver.minimize_window()
 
         return driver
 
