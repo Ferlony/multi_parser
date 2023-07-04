@@ -1,5 +1,6 @@
 from web_enum_parser.parser_web_enum import ParserWebEnum
 import asyncio
+from web_enum_parser.enums_classes import LinkType
 
 
 async def main():
@@ -9,7 +10,7 @@ async def main():
         link = input()
         if link:
             enum_parser = ParserWebEnum(link)
-            asyncio.create_task(enum_parser.parse_from_web())
+            asyncio.create_task(enum_parser.parse_from_web(LinkType.en.value))
     except Exception as e:
         print(e)
     return

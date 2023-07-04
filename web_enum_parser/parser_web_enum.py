@@ -1,11 +1,15 @@
 import time
 import os
-from web_enum_parser.depfuns import check_dirs, get_file_content, write_content_in_file, check_part_files, create_new_dir, get_program_root
+import signal
+from web_enum_parser.depfuns import (check_dirs, get_file_content, write_content_in_file,
+                                     check_part_files, create_new_dir, get_program_root)
 import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from pathlib import Path
 from selenium.webdriver.firefox.options import Options as Firefox_Options
+from web_enum_parser.enums_classes import LinkType, VideoQuality
+
 
 class ParserWebEnum:
     def __init__(self, link: str):
@@ -51,6 +55,8 @@ class ParserWebEnum:
         time.sleep(self.sleep_time)
         while True:
             files = sorted(Path(folder_path).iterdir(), key=os.path.getmtime)
+            check_counter = 0
+            out_check_counter = 10
             for each in files:
                 if counter == len(files):
                     return True
@@ -58,9 +64,13 @@ class ParserWebEnum:
                     counter = 0
                     time.sleep(self.sleep_time)
                 else:
-                    counter += 1
+                    check_counter += 1
+                    time.sleep(0.5)
+                    if check_counter == out_check_counter:
+                        check_counter = 0
+                        counter += 1
 
-    async def __download_with_driver(self, url, folder_path):
+    async def __download_file_type_en(self, url, folder_path):
         driver = self.__driver_creator(folder_path)
         driver.implicitly_wait(self.sleep_time)
         driver.get(url)
@@ -79,33 +89,66 @@ class ParserWebEnum:
         if await self.__await_download_file(self.default_download_dir + folder_path):
             driver.close()
 
-    async def parse_from_web(self, js_exec=True):
+    async def __download_file_type_ru(self, url, folder_path):
+        driver = self.__driver_creator(folder_path)
+        driver.implicitly_wait(self.sleep_time)
+        driver.get(url)
+
+        list_of_videos = driver.find_elements(By.ID, "my-player")
+        print(list_of_videos)
+        os.kill(os.getpid(), signal.SIGKILL)
+
+        # for each in VideoQuality:
+        #     try:
+        #         list_of_videos.
+        #         # str(each.value)
+
+    async def parse_from_web(self, link_type):
         check_dirs()
         check_part_files(self.default_download_dir)
-        i = get_file_content(self.last_enum_file)
+
+        i = int(get_file_content(self.last_enum_file, "1"))
 
         counter = 0
         while True:
             try:
                 counter += 1
                 print(f"Enum: {i}")
-                url = self.link + str(i)
+
+                url = ""
+                if link_type == LinkType.ru.value:
+                    url = self.link + str(i)
+                elif link_type == LinkType.en.value:
+                    url = self.link + "episode-" + str(i) + ".html"
+                else:
+                    raise Exception("Unknown link_type")
+
                 status_code = requests.get(url).status_code
+
                 if status_code == 200:
                     create_new_dir(self.default_download_dir + self.special_folder_path)
-                    # await self.__download_with_driver(url)
-                    await self.__download_with_driver(url, self.special_folder_path)
+
+                    if link_type == LinkType.ru.value:
+                        await self.__download_file_type_en(url, self.special_folder_path)
+                    elif link_type == LinkType.en.value:
+                        await self.__download_file_type_ru(url, self.special_folder_path)
+                    else:
+                        raise Exception("Unknown link_type")
+
                     counter = 0
                     i += 1
                     write_content_in_file(self.last_enum_file, i)
                     print(f"File downloaded\nnext enum {i} saved")
                     time.sleep(self.sleep_time)
-                elif status_code == 500:
+
+                elif (status_code == LinkType.en_not_found_status_code.value) or \
+                        (status_code == LinkType.ru_not_found_status_code.value):
                     print(f"Last enum {i}")
                     write_content_in_file(self.last_enum_file, i)
                     print(f"last enum {i} saved")
                     break
                 else:
+                    print(status_code)
                     if counter >= self.max_try:
                         print("max try reached - out")
                         write_content_in_file(self.last_enum_file, i)
@@ -113,10 +156,6 @@ class ParserWebEnum:
                         break
                     print(f"Counter: {counter}")
                     time.sleep(self.sleep_time)
-            # except KeyboardInterrupt:
-            #     write_content_in_file(self.last_enum_file, i)
-            #     print(f"last enum {i} saved")
-            #     return -1
             except Exception as e:
                 print(e)
                 return -1

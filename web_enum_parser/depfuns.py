@@ -29,14 +29,14 @@ def check_dirs():
     return True
 
 
-def get_file_content(filename):
+def get_file_content(filename, write_if_not: str):
     if os.path.exists(filename):
         with open(filename, "r") as f:
-            return int(f.read())
+            return f.read()
     else:
         with open(filename, "w") as f:
-            f.write(str(1))
-            return 1
+            f.write(write_if_not)
+            return write_if_not
 
 
 def write_content_in_file(filename, value):
