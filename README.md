@@ -5,7 +5,8 @@ About
 Parser for different services with threads and queues.
 
 
-Work with youtube, songlyrics.com
+Works with youtube, songlyrics.com, selenium
+Has config file
 
 
 Installation
@@ -22,7 +23,6 @@ pip install -r requirements.txt
 Usage
 =====
 ```
-cd multi_parser
 source venv/bin/activate
-python main.py
+python -m src.main
 ```

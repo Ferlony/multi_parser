@@ -11,8 +11,9 @@ from src.base.decorators import *
 
 class SonglyricsParser(Parser):
 
-    special_folder = "songlyrics" + sep
-    full_folder_path = Parser.current_working_dir + Parser.gen_files_folder + special_folder
+    def __init__(self):
+        self.special_folder = "songlyrics" + sep
+        self.default_full_folder_path = Parser.project_dir + Parser.gen_files_folder + self.special_folder
 
     group_title_folder = None
 
@@ -30,9 +31,15 @@ class SonglyricsParser(Parser):
     @download_for_threads_decorator
     def download_from_songlyrics(self, option, url=None, title_folder=None):
         if option == SonglyricsOptionsEnum.one_lyric.value:
-            self.__download_songlyrics_one_lyric(url, self.full_folder_path + title_folder)
+            if Parser.flag_for_default_path:
+                self.__download_songlyrics_one_lyric(url, self.default_full_folder_path + title_folder)
+            else:
+                self.__download_songlyrics_one_lyric(url, Parser.download_path_single_text_files)
         elif option == SonglyricsOptionsEnum.all_lyrics.value:
-            self.__download_songlyrics_one_lyric(url, self.full_folder_path + title_folder)
+            if Parser.flag_for_default_path:
+                self.__download_songlyrics_one_lyric(url, self.default_full_folder_path + title_folder)
+            else:
+                self.__download_songlyrics_one_lyric(url, Parser.download_path_text_files_playlist)
 
     @download_one_file_decorator
     def __download_songlyrics_one_lyric(self, url, save_path):

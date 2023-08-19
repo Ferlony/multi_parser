@@ -10,9 +10,10 @@ from src.base.decorators import *
 
 
 class YoutubeParser(Parser):
-
-    special_folder = "YouTubeFiles" + sep
-    full_folder_path = Parser.current_working_dir + Parser.gen_files_folder + special_folder
+    def __init__(self):
+        # default download folders
+        self.special_folder = "YouTubeFiles" + sep
+        self.full_folder_path = Parser.project_dir + Parser.gen_files_folder + self.special_folder
 
     playlist_title_folder = None
 
@@ -34,7 +35,7 @@ class YoutubeParser(Parser):
         for url, folder in queue_arr:
             try_counter = 0
             while True:
-                if try_counter > 4:
+                if try_counter > Parser.download_tries_number:
                     print("Loop tries out")
                     break
                 try:
@@ -53,34 +54,44 @@ class YoutubeParser(Parser):
         print(yt.title)
         try:
             if option == YoutubeParserOptionsEnum.one_video.value:
-                self.__download_youtube_one_video(yt, self.full_folder_path + title_folder)
+                if Parser.flag_for_default_path:
+                    self.__download_youtube_one_video(yt, self.full_folder_path + title_folder)
+                else:
+                    self.__download_youtube_one_video(yt, Parser.download_path_single_videos)
             elif option == YoutubeParserOptionsEnum.one_audio.value:
-                self.__download_youtube_one_audio(yt, self.full_folder_path + title_folder)
+                if Parser.flag_for_default_path:
+                    self.__download_youtube_one_audio(yt, self.full_folder_path + title_folder)
+                else:
+                    self.__download_youtube_one_audio(yt, Parser.download_path_single_music)
             elif option == YoutubeParserOptionsEnum.playlist_video.value:
-                new_title_folder = title_folder + "_video" + sep
-                self.__download_youtube_one_video(yt, self.full_folder_path + new_title_folder)
+                new_title_folder = title_folder + sep
+                if Parser.flag_for_default_path:
+                    self.__download_youtube_one_video(yt, self.full_folder_path + new_title_folder)
+                else:
+                    self.__download_youtube_one_video(yt, Parser.download_path_playlists_videos + new_title_folder)
             elif option == YoutubeParserOptionsEnum.playlist_audio.value:
-                new_title_folder = title_folder + "_audio" + sep
-                self.__download_youtube_one_audio(yt, self.full_folder_path + new_title_folder)
+                new_title_folder = title_folder + sep
+                if Parser.flag_for_default_path:
+                    self.__download_youtube_one_audio(yt, self.full_folder_path + new_title_folder)
+                else:
+                    self.__download_youtube_one_audio(yt, Parser.download_path_playlists_music + new_title_folder)
 
         except CouldNotDownloadError:
             self.fail_download_queue.put({yt.title, url})
 
     def download_from_youtube_check(self, option, url=None):
         if option == YoutubeParserOptionsEnum.one_video.value:
-            self.check_dirs()
-            return True
+            return self.check_dirs()
         elif option == YoutubeParserOptionsEnum.one_audio.value:
-            self.check_dirs()
-            return True
+            return self.check_dirs()
         elif option == YoutubeParserOptionsEnum.playlist_video.value:
             playlist = pytube.Playlist(url)
-            playlist_title_folder = playlist.title + "_video" + sep
+            playlist_title_folder = playlist.title + sep
             self.playlist_title_folder = playlist_title_folder
             return self.__check_playlist(playlist)
         elif option == YoutubeParserOptionsEnum.playlist_audio.value:
             playlist = pytube.Playlist(url)
-            playlist_title_folder = playlist.title + "_audio" + sep
+            playlist_title_folder = playlist.title + sep
             self.playlist_title_folder = playlist_title_folder
             return self.__check_playlist(playlist)
         else:

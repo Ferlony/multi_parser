@@ -3,18 +3,23 @@ from asyncio import run
 
 from src.parsers.parser_youtube import YoutubeParser
 from src.parsers.parser_songlyrics import SonglyricsParser
+from src.parsers.parser_get_with_headers import GetWithHeadersParser
+
 from src.base.parser import Parser
 from src.base.enums import YoutubeParserOptionsEnum, SonglyricsOptionsEnum
 from src.base.depfuns import confirmation
 from src.base.decorators import *
+
 from src.web_enum_parser.main import main as web_enum_parser_main
+from src.base.config_dataclass import ConfigDataclass
 
 
 class Menu:
     youtube_pars = YoutubeParser()
     songlyrics_pars = SonglyricsParser()
+    get_with_headers_pars = GetWithHeadersParser()
 
-    threads_max_number = 10
+    threads_max_number = ConfigDataclass.threads_number
     threads_list = []
 
     def main_menu(self):
@@ -23,7 +28,7 @@ class Menu:
                   "'1' Download from youtube\n"
                   "'2' Download lyrics from songlyrics.com\n"
                   "'3' Download from site with js and enum\n"
-                  "'4' Configuration\n"
+                  "'4' Download from site with get and headers\n"
                   "'0' Close program")
             inp = input()
             if inp == "1":
@@ -43,35 +48,25 @@ class Menu:
                     print(e)
             elif inp == "4":
                 try:
-                    self.__configuration_menu()
+                    self.__get_with_header_menu()
                 except Exception as e:
                     print(e)
-            elif inp == "t":
-                pass
             elif inp == "0":
                 print("Closing program")
                 break
             else:
                 print("Wrong input")
 
-    def __configuration_menu(self):
+    def __get_with_header_menu(self):
         while True:
+            self.get_with_headers_pars.clear_queue()
+            self.threads_list = []
             print("Choose option:\n"
-                  "'1' Set number of threads (10 by default)\n"
+                  "'1' Download all from url\n"
                   "'0' Back")
             inp = input()
             if inp == "1":
-                print("Enter number of threads from 1 to 10")
-                try:
-                    thr_number = int(input())
-                    if thr_number in range(1, 11):
-                        self.threads_max_number = thr_number
-                        print(f"Threads number successfully set {thr_number}")
-                    else:
-                        print("Wrong input")
-                except Exception as e:
-                    print("Wrong input")
-                    print(e)
+                self.__download_options_get_with_headers()
             elif inp == "0":
                 break
             else:
@@ -142,6 +137,16 @@ class Menu:
 
         return threads_number
 
+    def __download_options_get_with_headers(self):
+        self.__queue_menu_one(self.get_with_headers_pars, None)
+        if self.get_with_headers_pars.download_check():
+            self.get_with_headers_pars.print_queue_elems()
+            self.get_with_headers_pars.queue_size_max = self.get_with_headers_pars.some_queue.qsize()
+            print(self.get_with_headers_pars.queue_size_max)
+            if confirmation():
+                self.__get_with_headers_pars_start_downloading(self.__start_download_menu(self.get_with_headers_pars))
+                self.get_with_headers_pars.print_result()
+
     def __download_options_songlyrics_one(self, option):
         self.__queue_menu_one(self.songlyrics_pars, None)
         if self.songlyrics_pars.download_from_songlyrics_check(option):
@@ -177,6 +182,13 @@ class Menu:
         if confirmation():
             self.__youtube_start_downloading(self.__start_download_menu(self.youtube_pars), option)
             self.youtube_pars.print_result()
+
+    @start_downloading_decorator
+    def __get_with_headers_pars_start_downloading(self, threads_number, option):
+        thr = threading.Thread(target=self.get_with_headers_pars.download_from_url,
+                               args=[option],
+                               daemon=False)
+        self.threads_list.append(thr)
 
     @start_downloading_decorator
     def __songlyrics_start_downloading(self, threads_number, option):

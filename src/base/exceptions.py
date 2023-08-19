@@ -11,3 +11,8 @@ class EmptyQueueError(Exception):
 class UnsupportedOptionError(Exception):
     def __init__(self, message="UnsupportedOptionError"):
         super().__init__(message)
+
+
+class InappropriateThreadsNumberError(Exception):
+    def __init__(self, message="InappropriateThreadsNumberError"):
+        super().__init__(message)

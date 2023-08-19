@@ -12,13 +12,23 @@ from src.web_enum_parser.depfuns import (check_dirs, get_file_content, write_con
                                      check_part_files, create_new_dir, get_program_root)
 from src.web_enum_parser.enums_classes import LinkType, VideoQuality
 
+from src.base.parser import Parser
 
-class ParserWebEnum:
+
+class ParserWebEnum(Parser):
     def __init__(self, link: str):
         self.__link = link
         self.link_without_spec_signs = self.link.replace(os.sep, "").replace(":", "")
         self.last_enum_file = os.path.dirname(os.path.abspath(__file__)) + os.sep + "Logs" + os.sep + self.link_without_spec_signs
         self.special_folder_path = self.link_without_spec_signs + os.sep
+
+        self.max_try = Parser.download_tries_number
+        self.sleep_time = Parser.sleep_time_error
+
+        if Parser.flag_for_default_path:
+            self.default_download_dir = get_program_root() + os.sep + "ParsedFiles" + os.sep + "WebEnum" + os.sep
+        else:
+            self.default_download_dir = Parser.download_path_playlists_videos
 
     @property
     def link(self):
@@ -28,11 +38,8 @@ class ParserWebEnum:
     def link(self, value):
         self.__link = value
 
-    max_try = 5
-    sleep_time = 5
     download_await_time = 3600
     window_size = {"x": 200, "y": 1600}
-    default_download_dir = get_program_root() + os.sep + "ParsedFiles" + os.sep + "WebEnum" + os.sep
 
     def __driver_creator(self, folder_path):
         my_firefox_profile = webdriver.FirefoxProfile()
