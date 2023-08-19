@@ -1,8 +1,9 @@
 from queue import Queue
-from parser_dataclass import ParserDataClass
 from os import path
 from os import mkdir
 from os import sep
+
+from src.base.parser_dataclass import ParserDataClass
 
 
 class Parser(ParserDataClass):

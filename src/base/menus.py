@@ -1,12 +1,13 @@
-from parser_youtube import YoutubeParser
-from parser_songlyrics import SonglyricsParser
-from parser import Parser
 import threading
-from enums import YoutubeParserOptionsEnum, SonglyricsOptionsEnum
-from depfuns import confirmation
-import decorators
-import web_enum_parser.main as web_enum_parser_main
 from asyncio import run
+
+from src.parsers.parser_youtube import YoutubeParser
+from src.parsers.parser_songlyrics import SonglyricsParser
+from src.base.parser import Parser
+from src.base.enums import YoutubeParserOptionsEnum, SonglyricsOptionsEnum
+from src.base.depfuns import confirmation
+from src.base.decorators import *
+from src.web_enum_parser.main import main as web_enum_parser_main
 
 
 class Menu:
@@ -37,7 +38,7 @@ class Menu:
                     print(e)
             elif inp == "3":
                 try:
-                    run(web_enum_parser_main.main())
+                    run(web_enum_parser_main())
                 except Exception as e:
                     print(e)
             elif inp == "4":
@@ -177,14 +178,14 @@ class Menu:
             self.__youtube_start_downloading(self.__start_download_menu(self.youtube_pars), option)
             self.youtube_pars.print_result()
 
-    @decorators.start_downloading_decorator
+    @start_downloading_decorator
     def __songlyrics_start_downloading(self, threads_number, option):
         thr = threading.Thread(target=self.songlyrics_pars.download_from_songlyrics,
                                args=[option],
                                daemon=False)
         self.threads_list.append(thr)
 
-    @decorators.start_downloading_decorator
+    @start_downloading_decorator
     def __youtube_start_downloading(self, threads_number, option):
         thr = threading.Thread(target=self.youtube_pars.download_from_youtube,
                                args=[option],
@@ -192,16 +193,16 @@ class Menu:
         self.threads_list.append(thr)
 
     @staticmethod
-    @decorators.queue_menu_decorator
+    @queue_menu_decorator
     def __queue_menu_one(some_parser: Parser, option, url=None):
         some_parser.some_queue.put([url, some_parser.sing_file_folder])
 
     @staticmethod
-    @decorators.queue_menu_decorator
+    @queue_menu_decorator
     def __songlyrics_queue_menu_group(some_parser: SonglyricsParser, option, url=None):
         print(some_parser.download_from_songlyrics_check(option, url))
 
     @staticmethod
-    @decorators.queue_menu_decorator
+    @queue_menu_decorator
     def __youtube_queue_menu_playlist(some_parser: YoutubeParser, option, url=None):
         print(some_parser.download_from_youtube_check(option, url))

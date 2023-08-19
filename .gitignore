@@ -1,7 +1,4 @@
+.mypy_cache
 venv
-ParsedFiles
-test.py
 .idea
-__pycache__
-notes.txt
-geckodriver.log
+ 

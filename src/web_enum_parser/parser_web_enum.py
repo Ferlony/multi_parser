@@ -1,14 +1,16 @@
 import time
 import os
 import signal
-from web_enum_parser.depfuns import (check_dirs, get_file_content, write_content_in_file,
-                                     check_part_files, create_new_dir, get_program_root)
+from pathlib import Path
+
 import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from pathlib import Path
 from selenium.webdriver.firefox.options import Options as Firefox_Options
-from web_enum_parser.enums_classes import LinkType, VideoQuality
+
+from src.web_enum_parser.depfuns import (check_dirs, get_file_content, write_content_in_file,
+                                     check_part_files, create_new_dir, get_program_root)
+from src.web_enum_parser.enums_classes import LinkType, VideoQuality
 
 
 class ParserWebEnum:

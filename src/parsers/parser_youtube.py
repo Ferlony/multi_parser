@@ -1,10 +1,12 @@
 import time
-import pytube
 from os import sep
-from parser import Parser
-from exceptions import CouldNotDownloadError, UnsupportedOptionError
-from enums import YoutubeParserOptionsEnum
-import decorators
+
+import pytube
+
+from src.base.parser import Parser
+from src.base.exceptions import CouldNotDownloadError, UnsupportedOptionError
+from src.base.enums import YoutubeParserOptionsEnum
+from src.base.decorators import *
 
 
 class YoutubeParser(Parser):
@@ -45,7 +47,7 @@ class YoutubeParser(Parser):
         for i in title_and_url:
             print(i)
 
-    @decorators.download_for_threads_shorten_decorator
+    @download_for_threads_shorten_decorator
     def download_from_youtube(self, option, url=None, title_folder=None):
         yt = pytube.YouTube(url)
         print(yt.title)
@@ -84,11 +86,11 @@ class YoutubeParser(Parser):
         else:
             raise UnsupportedOptionError
 
-    @decorators.download_youtube_one_file_decorator
+    @download_youtube_one_file_decorator
     def __download_youtube_one_video(self, yt: pytube.YouTube, save_path):
         yt.streams.get_highest_resolution().download(save_path)
 
-    @decorators.download_youtube_one_file_decorator
+    @download_youtube_one_file_decorator
     def __download_youtube_one_audio(self, yt: pytube.YouTube, save_path):
         yt.streams.filter(only_audio=True, audio_codec="opus").order_by("abr").last().download(
             save_path,

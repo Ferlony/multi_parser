@@ -1,6 +1,7 @@
-from web_enum_parser.parser_web_enum import ParserWebEnum
 import asyncio
-from web_enum_parser.enums_classes import LinkType
+
+from src.web_enum_parser.parser_web_enum import ParserWebEnum
+from src.web_enum_parser.enums_classes import LinkType
 
 
 async def main():

@@ -1,10 +1,12 @@
-from parser import Parser
 from os import sep
-from bs4 import BeautifulSoup
+
 import requests
-from enums import SonglyricsOptionsEnum
-from exceptions import UnsupportedOptionError
-import decorators
+from bs4 import BeautifulSoup
+
+from src.base.parser import Parser
+from src.base.enums import SonglyricsOptionsEnum
+from src.base.exceptions import UnsupportedOptionError
+from src.base.decorators import *
 
 
 class SonglyricsParser(Parser):
@@ -25,14 +27,14 @@ class SonglyricsParser(Parser):
         else:
             raise UnsupportedOptionError
 
-    @decorators.download_for_threads_decorator
+    @download_for_threads_decorator
     def download_from_songlyrics(self, option, url=None, title_folder=None):
         if option == SonglyricsOptionsEnum.one_lyric.value:
             self.__download_songlyrics_one_lyric(url, self.full_folder_path + title_folder)
         elif option == SonglyricsOptionsEnum.all_lyrics.value:
             self.__download_songlyrics_one_lyric(url, self.full_folder_path + title_folder)
 
-    @decorators.download_one_file_decorator
+    @download_one_file_decorator
     def __download_songlyrics_one_lyric(self, url, save_path):
         self.__download_lyric(url, save_path)
 

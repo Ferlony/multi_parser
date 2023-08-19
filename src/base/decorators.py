@@ -1,5 +1,6 @@
-from exceptions import CouldNotDownloadError
 from time import sleep
+
+from src.base.exceptions import CouldNotDownloadError
 
 
 def download_youtube_one_file_decorator(fun):
