@@ -29,16 +29,13 @@ class GetWithHeadersParser(Parser):
                   "'0' Back")
             inp = input()
             if inp == "1":
-                try:
-                    url = input("Enter url:\n")
-                    links, uniq_name = self.get_links(url)
-                    for i in range(0, len(links)):
-                        link_items = list(links[i].items())[0]
-                        name = link_items[0]
-                        link = link_items[1]
-                        await self.download_video(link, uniq_name, name)
-                except Exception as e:
-                    print(e)
+                url = input("Enter url:\n")
+                links, uniq_name = self.get_links(url)
+                for i in range(0, len(links)):
+                    link_items = list(links[i].items())[0]
+                    name = link_items[0]
+                    link = link_items[1]
+                    await self.download_video(link, uniq_name, name)
             elif inp == "0":
                 break
             else:
@@ -172,7 +169,7 @@ class GetWithHeadersParser(Parser):
                 break
             try:
                 async with aiohttp.ClientSession(raise_for_status=True, headers=self.HEADERS) as cli:
-                    async with cli.get(link) as r:
+                    async with cli.get(link, timeout=None) as r:
                         async with aiofiles.open(Parser.download_path_playlists_videos + title_folder + sep + name + ".mp4", "wb+") as f:
                             async for d in r.content.iter_any():
                                 await f.write(d) if d else None
@@ -180,4 +177,4 @@ class GetWithHeadersParser(Parser):
                 print(e)
                 print("Loop try: ", try_counter)
 
-        print(f"{title_folder} downloaded!")
+        print(f"{Parser.download_path_playlists_videos + title_folder + sep + name + '.mp4'} downloaded!")
