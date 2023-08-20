@@ -1,11 +1,18 @@
+aiofiles==23.2.1
+aiohttp==3.8.5
+aiosignal==1.3.1
 async-generator==1.10
+async-timeout==4.0.3
 attrs==23.1.0
 beautifulsoup4==4.12.0
 certifi==2022.12.7
 charset-normalizer==3.1.0
 exceptiongroup==1.1.1
+frozenlist==1.4.0
 h11==0.14.0
 idna==3.4
+lxml==4.9.3
+multidict==6.0.4
 outcome==1.2.0
 PySocks==1.7.1
 pytube
@@ -18,3 +25,4 @@ trio==0.22.0
 trio-websocket==0.10.2
 urllib3==1.26.15
 wsproto==1.2.0
+yarl==1.9.2

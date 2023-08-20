@@ -48,26 +48,11 @@ class Menu:
                     print(e)
             elif inp == "4":
                 try:
-                    self.__get_with_header_menu()
+                    run(self.get_with_headers_pars.menu())
                 except Exception as e:
                     print(e)
             elif inp == "0":
                 print("Closing program")
-                break
-            else:
-                print("Wrong input")
-
-    def __get_with_header_menu(self):
-        while True:
-            self.get_with_headers_pars.clear_queue()
-            self.threads_list = []
-            print("Choose option:\n"
-                  "'1' Download all from url\n"
-                  "'0' Back")
-            inp = input()
-            if inp == "1":
-                self.__download_options_get_with_headers()
-            elif inp == "0":
                 break
             else:
                 print("Wrong input")
@@ -136,16 +121,6 @@ class Menu:
             threads_number = self.threads_max_number
 
         return threads_number
-
-    def __download_options_get_with_headers(self):
-        self.__queue_menu_one(self.get_with_headers_pars, None)
-        if self.get_with_headers_pars.download_check():
-            self.get_with_headers_pars.print_queue_elems()
-            self.get_with_headers_pars.queue_size_max = self.get_with_headers_pars.some_queue.qsize()
-            print(self.get_with_headers_pars.queue_size_max)
-            if confirmation():
-                self.__get_with_headers_pars_start_downloading(self.__start_download_menu(self.get_with_headers_pars))
-                self.get_with_headers_pars.print_result()
 
     def __download_options_songlyrics_one(self, option):
         self.__queue_menu_one(self.songlyrics_pars, None)

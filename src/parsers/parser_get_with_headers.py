@@ -1,9 +1,12 @@
-from os import sep
+from os import sep, path, makedirs
 
 import requests
 from bs4 import BeautifulSoup
+import aiofiles
+import aiohttp
 
 from src.base.parser import Parser
+from src.base.decorators import download_for_threads_decorator
 
 
 class GetWithHeadersParser(Parser):
@@ -14,7 +17,35 @@ class GetWithHeadersParser(Parser):
     def download_check(self):
         return self.check_dirs()
 
-    def download_from_url(self, url):
+    @staticmethod
+    def __put_in_parser_queue(items):
+        for each in items:
+            Parser.some_queue.put(each)
+
+    async def menu(self):
+        while True:
+            print("Choose option:\n"
+                  "'1' Download from url\n"
+                  "'0' Back")
+            inp = input()
+            if inp == "1":
+                try:
+                    url = input("Enter url:\n")
+                    links, uniq_name = self.get_links(url)
+                    for i in range(0, len(links)):
+                        link_items = list(links[i].items())[0]
+                        name = link_items[0]
+                        link = link_items[1]
+                        await self.download_video(link, uniq_name, name)
+                except Exception as e:
+                    print(e)
+            elif inp == "0":
+                break
+            else:
+                print("Wrong input")
+
+    def get_links(self, url):
+        print("headers:\n", self.HEADERS)
         # Очистка URL
         if url[:5] == "https":
             url = "/" + url.split("/")[3]
@@ -34,7 +65,8 @@ class GetWithHeadersParser(Parser):
         content = BeautifulSoup(html.content, "lxml")
 
         # Оригинальное название
-        uniq_name = content.find("div", class_="under_video_additional the_hildi").text.split(".")[-1:][0][23:-24].replace(" ", "-")
+        uniq_name = content.find("div", class_="under_video_additional the_hildi").text.split(".")[-1:][0][
+                    23:-24].replace(" ", "-")
         name_exceptions = [":", "/", "*", "\"", "<", ">", "|", " "]
         for i in range(len(name_exceptions)):
             uniq_name = uniq_name.replace(name_exceptions[i], "")
@@ -63,10 +95,10 @@ class GetWithHeadersParser(Parser):
         for item in block:
             links_to_page.append(f"{self.site_url}{item.get('href')}")
 
-        #Офомляем красивые имена видеов
+        # Офомляем красивые имена видеов
         video_name = []
         for i in range(len(links_to_page)):
-            video_name.append(links_to_page[i][len(self.site_url+url)+1:-5].replace("/", " "))
+            video_name.append(links_to_page[i][len(self.site_url + url) + 1:-5].replace("/", " "))
 
         quick_parsing = False
         file_name = f"{Parser.download_path_playlists_videos}{sep}{uniq_name}-1080p.txt"
@@ -75,25 +107,25 @@ class GetWithHeadersParser(Parser):
         # file_name = f"catalog/{uniq_name}-480p.txt"
         print("")
 
-        #Получаем ссылки на все видео
+        # Получаем ссылки на все видео
         links_to_vidio = []
         for i in range(len(links_to_page)):
             print(f"Parse {i + 1} video link...")
-            #Подгоняем адресс под серию
+            # Подгоняем адресс под серию
             site_url = links_to_page[i]
             html = requests.get(site_url, headers=self.HEADERS)
             content = BeautifulSoup(html.content, "lxml")
 
-            #Определяем конкретный блок видео
+            # Определяем конкретный блок видео
             block = content.find("div", class_="border_around_video no-top-right-border")
             if block is None:
                 block = content.find("div", class_="border_around_video")
 
-            #Останавливаемся если запрещенно в России или его нет на сайте
+            # Останавливаемся если запрещенно в России или его нет на сайте
             if i == 0:
                 if block.find("source") is None:
                     input(f"\nSorry, {uniq_name} is not available in Russia :(\nEnter anything to exit > ")
-                    raise GeneratorExit ("WE DIDN'T FIND THIS ANIME")
+                    raise GeneratorExit("WE DIDN'T FIND THIS CONTENT")
                     pass
 
             # Находим ссылку
@@ -119,8 +151,33 @@ class GetWithHeadersParser(Parser):
         # except FileExistsError: pass
 
         # Добовляем в нашу папку текст. файл со всеми ссылками
-        with open(file_name, "w") as file:
-            for i in range(len(links_to_vidio)):
-                file.write(f"{links_to_vidio[i]}\n")
+        # with open(file_name, "w") as file:
+        #     for i in range(len(links_to_vidio)):
+        #         file.write(f"{links_to_vidio[i]}\n")
 
-        print("\nfinished!")
+        # link_items = list(links_to_vidio[i].items())[0]
+        # name = link_items[0]
+        # link = link_items[1]
+
+        return links_to_vidio, uniq_name
+
+    async def download_video(self, link: str, title_folder: str, name: str) -> None:
+
+        if not path.exists(Parser.download_path_playlists_videos + title_folder + sep):
+            makedirs(Parser.download_path_playlists_videos + title_folder + sep)
+
+        try_counter = 0
+        while True:
+            if try_counter >= Parser.download_tries_number:
+                break
+            try:
+                async with aiohttp.ClientSession(raise_for_status=True, headers=self.HEADERS) as cli:
+                    async with cli.get(link) as r:
+                        async with aiofiles.open(Parser.download_path_playlists_videos + title_folder + sep + name + ".mp4", "wb+") as f:
+                            async for d in r.content.iter_any():
+                                await f.write(d) if d else None
+            except Exception as e:
+                print(e)
+                print("Loop try: ", try_counter)
+
+        print(f"{title_folder} downloaded!")
