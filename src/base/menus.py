@@ -111,7 +111,7 @@ class Menu:
             else:
                 print("Wrong input")
 
-    def __start_download_menu(self, some_parser: Parser):
+    def start_download_menu(self, some_parser: Parser):
         threads_number = 1
         queue_size = some_parser.some_queue.qsize()
         some_parser.queue_size_max = queue_size
@@ -129,7 +129,7 @@ class Menu:
             self.songlyrics_pars.queue_size_max = self.songlyrics_pars.some_queue.qsize()
             print(self.songlyrics_pars.queue_size_max)
             if confirmation():
-                self.__songlyrics_start_downloading(self.__start_download_menu(self.songlyrics_pars), option)
+                self.__songlyrics_start_downloading(self.start_download_menu(self.songlyrics_pars), option)
                 self.songlyrics_pars.print_result()
 
     def __download_options_songlyrics_group(self, option):
@@ -138,7 +138,7 @@ class Menu:
         self.songlyrics_pars.queue_size_max = self.songlyrics_pars.some_queue.qsize()
         print(self.songlyrics_pars.queue_size_max)
         if confirmation():
-            self.__songlyrics_start_downloading(self.__start_download_menu(self.songlyrics_pars), option)
+            self.__songlyrics_start_downloading(self.start_download_menu(self.songlyrics_pars), option)
             self.songlyrics_pars.print_result()
 
     def __download_options_youtube_one(self, option):
@@ -147,7 +147,7 @@ class Menu:
             self.youtube_pars.print_queue_elems()
             print(self.youtube_pars.some_queue.qsize())
             if confirmation():
-                self.__youtube_start_downloading(self.__start_download_menu(self.youtube_pars), option)
+                self.__youtube_start_downloading(self.start_download_menu(self.youtube_pars), option)
                 self.youtube_pars.print_result()
 
     def __download_options_youtube_playlist(self, option):
@@ -155,7 +155,7 @@ class Menu:
         self.youtube_pars.print_queue_elems()
         print(self.youtube_pars.some_queue.qsize())
         if confirmation():
-            self.__youtube_start_downloading(self.__start_download_menu(self.youtube_pars), option)
+            self.__youtube_start_downloading(self.start_download_menu(self.youtube_pars), option)
             self.youtube_pars.print_result()
 
     @start_downloading_decorator

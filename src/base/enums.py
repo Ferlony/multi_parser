@@ -11,3 +11,10 @@ class YoutubeParserOptionsEnum(Enum):
 class SonglyricsOptionsEnum(Enum):
     one_lyric = 1
     all_lyrics = 2
+
+
+class ParserTypeEnum(Enum):
+    youtube = 1
+    songlyrics = 2
+    js_enums = 3
+    with_headers = 4
