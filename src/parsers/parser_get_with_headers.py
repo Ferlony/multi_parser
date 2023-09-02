@@ -14,6 +14,16 @@ class GetWithHeadersParser(Parser):
         self.HEADERS = {"User-Agent": Parser.user_agent}
         self.site_url = site_url
 
+    __title_folder = None
+
+    @property
+    def title_folder(self):
+        return self.__title_folder
+
+    @title_folder.setter
+    def title_folder(self, value):
+        self.__title_folder = value
+
     def download_check(self):
         return self.check_dirs()
 
@@ -40,6 +50,14 @@ class GetWithHeadersParser(Parser):
                 break
             else:
                 print("Wrong input")
+
+    async def no_menu(self, url):
+        links, uniq_name = self.get_links(url)
+        for i in range(0, len(links)):
+            link_items = list(links[i].items())[0]
+            name = link_items[0]
+            link = link_items[1]
+            await self.download_video(link, uniq_name, name)
 
     def get_links(self, url):
         print("headers:\n", self.HEADERS)
@@ -178,3 +196,30 @@ class GetWithHeadersParser(Parser):
                 print("Loop try: ", try_counter)
 
         print(f"{Parser.download_path_playlists_videos + title_folder + sep + name + '.mp4'} downloaded!")
+
+    @staticmethod
+    def check_title_folder_exist(title_folder):
+        if not path.exists(Parser.download_path_playlists_videos + title_folder + sep):
+            makedirs(Parser.download_path_playlists_videos + title_folder + sep)
+
+    async def download_video_threads(self):
+        while not self.some_queue.empty():
+            queue_list = self.some_queue.get()
+            name, link = queue_list
+
+            try_counter = 0
+            while True:
+                if try_counter >= Parser.download_tries_number:
+                    break
+                try:
+                    async with aiohttp.ClientSession(raise_for_status=True, headers=self.HEADERS) as cli:
+                        async with cli.get(link, timeout=None) as r:
+                            async with aiofiles.open(
+                                    Parser.download_path_playlists_videos + self.title_folder + sep + name + ".mp4", "wb+") as f:
+                                async for d in r.content.iter_any():
+                                    await f.write(d) if d else None
+                except Exception as e:
+                    print(e)
+                    print("Loop try: ", try_counter)
+
+            print(f"{Parser.download_path_playlists_videos + self.title_folder + sep + name + '.mp4'} downloaded!")

@@ -26,13 +26,10 @@ class ParserWorker:
 
 
     def start_songlyrics(self):
-        songlyrics_pars = SonglyricsParser()
+        pass
 
     def start_jsenums(self):
         pass
-
-    def start_with_headers(self):
-        get_with_headers_pars = GetWithHeadersParser()
 
 # Youtube
     def start_youtube(self):
@@ -40,19 +37,25 @@ class ParserWorker:
             self.__download_options_youtube_one(self.action)
         elif self.action == YoutubeParserOptionsEnum.one_audio.value:
             self.__download_options_youtube_one(self.action)
-        elif self.action == YoutubeParserOptionsEnum.playlist_video:
+        elif self.action == YoutubeParserOptionsEnum.playlist_video.value:
             self.__download_options_youtube_playlist(self.action)
-        elif self.action == YoutubeParserOptionsEnum.playlist_audio:
+        elif self.action == YoutubeParserOptionsEnum.playlist_audio.value:
             self.__download_options_youtube_playlist(self.action)
         else:
             return
 
     def __download_options_youtube_one(self, option):
-        self.__queue_menu_one(self.youtube_pars, None)
+        self.__queue_menu_one(self.youtube_pars, None, self.url)
         if self.youtube_pars.download_from_youtube_check(option):
             self.youtube_pars.print_queue_elems()
             self.__youtube_start_downloading(self.start_download_menu(self.youtube_pars), option)
             self.youtube_pars.print_result()
+
+    def __download_options_youtube_playlist(self, option):
+        self.__youtube_queue_menu_playlist(self.youtube_pars, option, self.url)
+        self.youtube_pars.print_queue_elems()
+        self.__youtube_start_downloading(self.start_download_menu(self.youtube_pars), option)
+        self.youtube_pars.print_result()
 
     def start_download_menu(self, some_parser: Parser):
         threads_number = 1
@@ -64,12 +67,6 @@ class ParserWorker:
             threads_number = self.threads_max_number
 
         return threads_number
-
-    def __download_options_youtube_playlist(self, option):
-        self.__youtube_queue_menu_playlist(self.youtube_pars, option)
-        self.youtube_pars.print_queue_elems()
-        self.__youtube_start_downloading(self.start_download_menu(self.youtube_pars), option)
-        self.youtube_pars.print_result()
 
     @staticmethod
     def __queue_menu_one(some_parser: Parser, option, url=None):
@@ -85,6 +82,26 @@ class ParserWorker:
                                args=[option],
                                daemon=False)
         self.threads_list.append(thr)
-
-
 # ===========================================
+
+# With headers
+    def start_with_headers(self):
+        links, uniq_name = self.get_with_headers_pars.get_links(self.url)
+        self.get_with_headers_pars.title_folder = uniq_name
+        self.__put_links_in_queue(links, self.get_with_headers_pars)
+        self.get_with_headers_pars.check_title_folder_exist(uniq_name)
+        self.__get_with_headers_start_downloading(self.start_download_menu(self.get_with_headers_pars))
+
+    @staticmethod
+    def __put_links_in_queue(links, parser: Parser):
+        for i in range(0, len(links)):
+            link_items = list(links[i].items())[0]
+            parser.some_queue.put(link_items)
+
+    def __get_with_headers_start_downloading(self, threads_number):
+        # for i in range(0, len(threads_number)):
+        #     thr = threading.Thread(target=self.get_with_headers_pars.download_video_threads,
+        #                            args=[],
+        #                            daemon=False)
+        #     self.threads_list.append(thr)
+        run(self.get_with_headers_pars.download_video_threads())
