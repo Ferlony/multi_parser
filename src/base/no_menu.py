@@ -86,11 +86,12 @@ class ParserWorker:
 
 # With headers
     def start_with_headers(self):
-        links, uniq_name = self.get_with_headers_pars.get_links(self.url)
-        self.get_with_headers_pars.title_folder = uniq_name
-        self.__put_links_in_queue(links, self.get_with_headers_pars)
-        self.get_with_headers_pars.check_title_folder_exist(uniq_name)
-        self.__get_with_headers_start_downloading(self.start_download_menu(self.get_with_headers_pars))
+        run(self.get_with_headers_pars.no_menu(self.url))
+        # links, uniq_name = self.get_with_headers_pars.get_links(self.url)
+        # self.get_with_headers_pars.title_folder = uniq_name
+        # self.__put_links_in_queue(links, self.get_with_headers_pars)
+        # self.get_with_headers_pars.check_title_folder_exist(uniq_name)
+        # self.__get_with_headers_start_downloading(self.start_download_menu(self.get_with_headers_pars))
 
     @staticmethod
     def __put_links_in_queue(links, parser: Parser):
