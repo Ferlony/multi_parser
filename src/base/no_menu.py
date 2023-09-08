@@ -86,23 +86,4 @@ class ParserWorker:
 
 # With headers
     def start_with_headers(self):
-        run(self.get_with_headers_pars.no_menu(self.url))
-        # links, uniq_name = self.get_with_headers_pars.get_links(self.url)
-        # self.get_with_headers_pars.title_folder = uniq_name
-        # self.__put_links_in_queue(links, self.get_with_headers_pars)
-        # self.get_with_headers_pars.check_title_folder_exist(uniq_name)
-        # self.__get_with_headers_start_downloading(self.start_download_menu(self.get_with_headers_pars))
-
-    @staticmethod
-    def __put_links_in_queue(links, parser: Parser):
-        for i in range(0, len(links)):
-            link_items = list(links[i].items())[0]
-            parser.some_queue.put(link_items)
-
-    def __get_with_headers_start_downloading(self, threads_number):
-        # for i in range(0, len(threads_number)):
-        #     thr = threading.Thread(target=self.get_with_headers_pars.download_video_threads,
-        #                            args=[],
-        #                            daemon=False)
-        #     self.threads_list.append(thr)
-        run(self.get_with_headers_pars.download_video_threads())
+        self.get_with_headers_pars.no_menu(self.url)

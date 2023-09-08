@@ -1,4 +1,5 @@
 from os import sep, path, makedirs
+from asinco import run
 
 import requests
 from bs4 import BeautifulSoup
@@ -7,6 +8,7 @@ import aiohttp
 
 from src.base.parser import Parser
 from src.base.decorators import download_for_threads_decorator
+from src.base.depfuns import add_string_to_file
 
 
 class GetWithHeadersParser(Parser):
@@ -32,7 +34,7 @@ class GetWithHeadersParser(Parser):
         for each in items:
             Parser.some_queue.put(each)
 
-    async def menu(self):
+    def menu(self):
         while True:
             print("Choose option:\n"
                   "'1' Download from url\n"
@@ -45,19 +47,14 @@ class GetWithHeadersParser(Parser):
                     link_items = list(links[i].items())[0]
                     name = link_items[0]
                     link = link_items[1]
-                    await self.download_video(link, uniq_name, name)
+                    run(self.download_video(link, uniq_name, name))
             elif inp == "0":
                 break
             else:
                 print("Wrong input")
 
-    async def no_menu(self, url):
-        links, uniq_name = self.get_links(url)
-        for i in range(0, len(links)):
-            link_items = list(links[i].items())[0]
-            name = link_items[0]
-            link = link_items[1]
-            await self.download_video(link, uniq_name, name)
+    def no_menu(self, url):
+        run(self.download_links(url))
 
     def get_links(self, url):
         print("headers:\n", self.HEADERS)
@@ -176,26 +173,43 @@ class GetWithHeadersParser(Parser):
 
         return links_to_vidio, uniq_name
 
-    async def download_video(self, link: str, title_folder: str, name: str) -> None:
+    async def download_links(self, url):
+        links, uniq_name = self.get_links(url)
 
-        if not path.exists(Parser.download_path_playlists_videos + title_folder + sep):
-            makedirs(Parser.download_path_playlists_videos + title_folder + sep)
 
-        try_counter = 0
-        while True:
-            if try_counter >= Parser.download_tries_number:
-                break
-            try:
-                async with aiohttp.ClientSession(raise_for_status=True, headers=self.HEADERS) as cli:
-                    async with cli.get(link, timeout=None) as r:
-                        async with aiofiles.open(Parser.download_path_playlists_videos + title_folder + sep + name + ".mp4", "wb+") as f:
-                            async for d in r.content.iter_any():
-                                await f.write(d) if d else None
-            except Exception as e:
-                print(e)
-                print("Loop try: ", try_counter)
+        if not path.exists(Parser.download_path_playlists_videos + uniq_name + sep):
+            makedirs(Parser.download_path_playlists_videos + uniq_name + sep)
 
-        print(f"{Parser.download_path_playlists_videos + title_folder + sep + name + '.mp4'} downloaded!")
+        last_name_index = 0
+        for i in range(0,len(links)):
+            link_items = list(links[i].items())[0]
+            name = link_items[0]
+            link = link_items[1]
+
+            if not os.path.exists(Parser.download_path_playlists_videos + uniq_name + sep + name + ".mp4"):
+                if i > 0:
+                    os.remove(Parser.download_path_playlists_videos + uniq_name + sep + list(links[i - 1].items())[0][0] + ".mp4")
+                    last_name_index = i - 1
+                    break
+                else:
+                    last_name_index = i
+                    break
+
+        add_string_to_file(str(uniq_name) + "\n==========\n")
+        for i in range(last_name_index, len(links)):
+            link_items = list(links[i].items())[0]
+            name = link_items[0]
+            link = link_items[1]
+            
+            async with aiohttp.ClientSession(raise_for_status=True, headers=self.HEADERS) as cli:
+                async with cli.get(link, timeout=None) as r:
+                    async with aiofiles.open(Parser.download_path_playlists_videos + uniq_name + sep + name + ".mp4", "wb+") as f:
+                        async for d in r.content.iter_any():
+                            await f.write(d) if d else None
+            add_string_to_file(str(i) + '.' + " " + str(name) + ".mp4")
+
+
+            print(f"{Parser.download_path_playlists_videos + uniq_name + sep + name + '.mp4'} downloaded!")
 
     @staticmethod
     def check_title_folder_exist(title_folder):
@@ -207,19 +221,14 @@ class GetWithHeadersParser(Parser):
             queue_list = self.some_queue.get()
             name, link = queue_list
 
-            try_counter = 0
-            while True:
-                if try_counter >= Parser.download_tries_number:
-                    break
-                try:
-                    async with aiohttp.ClientSession(raise_for_status=True, headers=self.HEADERS) as cli:
-                        async with cli.get(link, timeout=None) as r:
-                            async with aiofiles.open(
-                                    Parser.download_path_playlists_videos + self.title_folder + sep + name + ".mp4", "wb+") as f:
-                                async for d in r.content.iter_any():
-                                    await f.write(d) if d else None
-                except Exception as e:
-                    print(e)
-                    print("Loop try: ", try_counter)
+            
+
+            async with aiohttp.ClientSession(raise_for_status=True, headers=self.HEADERS) as cli:
+                async with cli.get(link, timeout=None) as r:
+                    async with aiofiles.open(
+                            Parser.download_path_playlists_videos + self.title_folder + sep + name + ".mp4", "wb+") as f:
+                        async for d in r.content.iter_any():
+                            await f.write(d) if d else None
+
 
             print(f"{Parser.download_path_playlists_videos + self.title_folder + sep + name + '.mp4'} downloaded!")
