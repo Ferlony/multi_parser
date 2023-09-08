@@ -1,5 +1,4 @@
 import threading
-from asyncio import run
 
 from src.parsers.parser_youtube import YoutubeParser
 from src.parsers.parser_songlyrics import SonglyricsParser

@@ -1,5 +1,5 @@
-from os import sep, path, makedirs
-from asinco import run
+from os import sep, path, makedirs, remove
+from asyncio import run
 
 import requests
 from bs4 import BeautifulSoup
@@ -186,9 +186,9 @@ class GetWithHeadersParser(Parser):
             name = link_items[0]
             link = link_items[1]
 
-            if not os.path.exists(Parser.download_path_playlists_videos + uniq_name + sep + name + ".mp4"):
+            if not path.exists(Parser.download_path_playlists_videos + uniq_name + sep + name + ".mp4"):
                 if i > 0:
-                    os.remove(Parser.download_path_playlists_videos + uniq_name + sep + list(links[i - 1].items())[0][0] + ".mp4")
+                    remove(Parser.download_path_playlists_videos + uniq_name + sep + list(links[i - 1].items())[0][0] + ".mp4")
                     last_name_index = i - 1
                     break
                 else:
