@@ -181,7 +181,7 @@ class GetWithHeadersParser(Parser):
             makedirs(Parser.download_path_playlists_videos + uniq_name + sep)
 
         last_name_index = 0
-        for i in range(0,len(links)):
+        for i in range(0, len(links)):
             link_items = list(links[i].items())[0]
             name = link_items[0]
             link = link_items[1]
@@ -200,7 +200,8 @@ class GetWithHeadersParser(Parser):
             link_items = list(links[i].items())[0]
             name = link_items[0]
             link = link_items[1]
-            
+
+            print(f"started {i}: {name}.mp4")
             async with aiohttp.ClientSession(raise_for_status=True, headers=self.HEADERS) as cli:
                 async with cli.get(link, timeout=None) as r:
                     async with aiofiles.open(Parser.download_path_playlists_videos + uniq_name + sep + name + ".mp4", "wb+") as f:
